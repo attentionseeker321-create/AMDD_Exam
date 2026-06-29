@@ -13,13 +13,17 @@
 <div class="row justify-content-center mt-4 mb-5">
 <div class="col-lg-10">
 
-    <div class="mb-3 d-flex gap-2">
-        <a asp-action="Results" class="btn btn-sm fw-semibold"
-           style="background:var(--amdd-700);color:#fff;border:none;padding:6px 16px;">
+    <div class="mb-3 d-flex gap-2 flex-wrap">
+        <a asp-action="Results"
+           class="btn btn-sm fw-semibold no-print"
+           style="background:var(--amdd-700);color:#fff;border:none;
+                  padding:8px 20px;border-radius:6px;font-size:0.9rem;">
             ← Back to Dashboard
         </a>
-        <button onclick="window.print()" class="btn btn-sm fw-semibold"
-                style="background:var(--amdd-600);color:#fff;border:none;padding:6px 16px;">
+        <button onclick="window.print()"
+                class="btn btn-sm fw-semibold no-print"
+                style="background:var(--amdd-600);color:#fff;border:none;
+                       padding:8px 20px;border-radius:6px;font-size:0.9rem;">
             🖨️ Print / Save PDF
         </button>
     </div>
@@ -29,7 +33,9 @@
         <div class="card-header text-white text-center py-4" style="background:linear-gradient(135deg,var(--amdd-900),var(--amdd-700));">
             <h3 class="mb-1 fw-bold">@s.ApplicantName</h3>
             <span class="badge px-3 py-2 fs-6 fw-bold" style="background:@badgeBg;">@s.ClassificationLabel</span>
-            <p class="mb-0 mt-2 small opacity-75">Submitted: @s.SubmittedAt.ToString("MMMM dd, yyyy — hh:mm tt")</p>
+            <p class="mb-0 mt-2 small opacity-75">
+                Submitted: @(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(s.SubmittedAt, "Asia/Manila").ToString("MMMM dd, yyyy — hh:mm tt"))
+            </p>
         </div>
         <div class="card-body p-4">
             <div class="alert alert-light border mb-4">@s.Remarks</div>

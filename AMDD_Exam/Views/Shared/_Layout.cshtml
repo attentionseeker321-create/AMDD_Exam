@@ -10,27 +10,27 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-dark amdd-navbar mb-3" style="padding:0 1rem;">
-            <div class="container-fluid d-flex align-items-center" style="height:56px;">
+        <nav class="navbar navbar-dark amdd-navbar mb-3" style="padding:0 1.5rem;">
+            <div class="container-fluid d-flex align-items-center justify-content-between" style="height:56px;gap:12px;">
                 <!-- Left: logo + name -->
-                <a class="navbar-brand fw-bold d-flex align-items-center gap-2 mb-0"
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2 mb-0 flex-shrink-0"
                    asp-controller="Exam" asp-action="Index"
-                   style="font-size:1rem;line-height:1;">
+                   style="font-size:1rem;line-height:1;color:#fff;text-decoration:none;">
                     <img src="~/favicon.png" alt="AMDD"
-                         style="width:26px;height:26px;filter:brightness(0) invert(1);flex-shrink:0;" />
+                         style="width:26px;height:26px;filter:brightness(0) invert(1);" />
                     AMDD Skills Exam
                 </a>
                 <!-- Center: subtitle -->
-                <span class="flex-grow-1 text-center small d-none d-md-block"
-                      style="color:#d9b8ff;letter-spacing:0.01em;">
+                <span class="text-center small flex-grow-1 d-none d-md-block"
+                      style="color:#d9b8ff;">
                     Branch Banking Application Development Unit
                 </span>
                 <!-- Right: reviewer button -->
                 <a asp-controller="Exam" asp-action="ReviewerLogin"
-                   class="btn btn-sm"
+                   class="btn btn-sm flex-shrink-0"
                    style="background:var(--amdd-600);color:#fff;border:none;
-                          font-size:0.78rem;padding:5px 14px;border-radius:6px;
-                          white-space:nowrap;flex-shrink:0;">
+                          font-size:0.8rem;padding:6px 16px;border-radius:6px;
+                          white-space:nowrap;">
                     🔍 Reviewer
                 </a>
             </div>
@@ -45,6 +45,9 @@
     <footer class="border-top footer mt-4" style="background:var(--amdd-900);">
         <div class="container py-2 small" style="color:var(--amdd-400);">
             &copy; @DateTime.Now.Year — Branch Banking Application Development Unit &mdash; Internal Use Only
+        </div>
+        <div class="container pb-2" style="font-size:0.72rem;color:var(--amdd-600);">
+            Made with 💜 by <em>cutiepatootiechechebureche</em> xd
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

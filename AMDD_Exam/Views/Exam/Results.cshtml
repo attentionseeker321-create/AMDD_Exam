@@ -12,17 +12,23 @@
             <h3 class="mb-0 fw-bold">🔍 Reviewer Dashboard</h3>
             <small style="color:var(--amdd-600);">Branch Banking Application Development Unit — Internal Use Only</small>
         </div>
-        <div class="d-flex gap-2 align-items-center">
-            <span class="fw-bold px-3 py-2 rounded"
-                  style="background:var(--amdd-700);color:#fff;font-size:0.95rem;">
+        <div class="d-flex gap-2 align-items-center no-print">
+            <span class="fw-bold px-4 py-2 rounded"
+                  style="background:var(--amdd-700);color:#fff;font-size:0.9rem;
+                         line-height:1.5;display:inline-block;">
                 @Model.Count submission(s)
             </span>
-            <button onclick="window.print()" class="btn btn-sm fw-semibold"
-                    style="background:var(--amdd-600);color:#fff;border:none;padding:6px 14px;">
+            <button onclick="window.print()"
+                    class="btn fw-semibold"
+                    style="background:var(--amdd-600);color:#fff;border:none;
+                           padding:8px 18px;border-radius:6px;font-size:0.9rem;">
                 🖨️ Print All
             </button>
-            <a asp-action="ReviewerLogout" class="btn btn-sm fw-semibold"
-               style="background:#fff;color:var(--amdd-700);border:1px solid var(--amdd-500);padding:6px 14px;">
+            <a asp-action="ReviewerLogout"
+               class="btn fw-semibold"
+               style="background:#fff;color:var(--amdd-700);
+                      border:2px solid var(--amdd-600);
+                      padding:8px 18px;border-radius:6px;font-size:0.9rem;">
                 Logout
             </a>
         </div>
@@ -65,8 +71,9 @@
                                 <td class="ps-3 fw-semibold">@row</td>
                                 <td class="fw-bold" style="font-size:1rem;">@s.ApplicantName</td>
                                 <td>
-                                    <div style="font-size:0.85rem;">@s.SubmittedAt.ToString("MMM dd, yyyy")</div>
-                                    <div style="font-size:0.8rem;color:var(--amdd-500);">@s.SubmittedAt.ToString("hh:mm tt")</div>
+                                    @{ var phTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(s.SubmittedAt, "Asia/Manila"); }
+                                    <div style="font-size:0.85rem;">@phTime.ToString("MMM dd, yyyy")</div>
+                                    <div style="font-size:0.8rem;color:var(--amdd-500);">@phTime.ToString("hh:mm tt")</div>
                                 </td>
                                 <td class="text-center">
                                     <div style="font-size:0.9rem;font-weight:600;color:@(s.SupportPct>=60?"#3b0764":"#7c1d47");">

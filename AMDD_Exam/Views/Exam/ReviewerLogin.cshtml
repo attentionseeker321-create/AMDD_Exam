@@ -3,28 +3,35 @@
 }
 
 <div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-header amdd-hero text-center py-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow border-0" style="border-radius:12px;overflow:hidden;">
+            <div class="amdd-hero text-center py-5 px-4">
                 <img src="~/favicon.png" alt="AMDD"
-                     style="width:48px;height:48px;filter:brightness(0) invert(1);margin-bottom:0.5rem;" />
-                <h4 class="mb-0 text-white fw-bold">Reviewer Access</h4>
-                <small style="color:#d9b8ff;">AMDD — Internal Use Only</small>
+                     style="width:56px;height:56px;filter:brightness(0) invert(1);
+                            display:block;margin:0 auto 1rem;" />
+                <h4 class="mb-1 text-white fw-bold" style="font-size:1.4rem;">Reviewer Access</h4>
+                <p class="mb-0 small" style="color:#d9b8ff;">AMDD — Internal Use Only</p>
             </div>
             <div class="card-body p-4">
                 @if (ViewBag.Error != null)
                 {
-                    <div class="alert alert-danger small">@ViewBag.Error</div>
+                    <div class="alert alert-danger small py-2 mb-3">@ViewBag.Error</div>
                 }
                 <form method="post" asp-action="ReviewerLogin">
                     @Html.AntiForgeryToken()
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Password</label>
-                        <input type="password" name="password" class="form-control form-control-lg"
-                               placeholder="Enter reviewer password" autofocus />
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold mb-2">Password</label>
+                        <input type="password" name="password"
+                               class="form-control form-control-lg"
+                               placeholder="Enter reviewer password"
+                               autofocus
+                               style="border:2px solid var(--amdd-400);border-radius:8px;" />
                     </div>
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-dark btn-lg">
+                        <button type="submit"
+                                class="btn btn-lg fw-bold"
+                                style="background:var(--amdd-700);color:#fff;border:none;
+                                       padding:14px;font-size:1rem;border-radius:8px;">
                             🔐 Enter Dashboard
                         </button>
                     </div>
