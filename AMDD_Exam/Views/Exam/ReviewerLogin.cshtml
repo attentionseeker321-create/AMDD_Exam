@@ -2,17 +2,22 @@
     ViewData["Title"] = "Reviewer Access";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5 col-lg-4">
-        <div class="card shadow border-0" style="border-radius:12px;overflow:hidden;">
-            <div class="amdd-hero text-center py-5 px-4">
+<div class="row justify-content-center" style="min-height:80vh;align-items:center;margin:0;">
+    <div class="col-12 col-sm-10 col-md-6 col-lg-4 py-4">
+        <div class="card shadow border-0" style="border-radius:16px;overflow:hidden;">
+
+            <!-- Purple hero -->
+            <div class="text-center py-5 px-4"
+                 style="background:linear-gradient(160deg,var(--amdd-900) 0%,var(--amdd-700) 100%);">
                 <img src="~/favicon.png" alt="AMDD"
-                     style="width:56px;height:56px;filter:brightness(0) invert(1);
+                     style="width:60px;height:60px;filter:brightness(0) invert(1);
                             display:block;margin:0 auto 1rem;" />
-                <h4 class="mb-1 text-white fw-bold" style="font-size:1.4rem;">Reviewer Access</h4>
-                <p class="mb-0 small" style="color:#d9b8ff;">AMDD — Internal Use Only</p>
+                <h4 class="text-white fw-bold mb-1" style="font-size:1.4rem;">Reviewer Access</h4>
+                <p class="mb-0" style="color:#d9b8ff;font-size:0.85rem;">AMDD — Internal Use Only</p>
             </div>
-            <div class="card-body p-4">
+
+            <!-- Form -->
+            <div class="card-body px-4 py-4">
                 @if (ViewBag.Error != null)
                 {
                     <div class="alert alert-danger small py-2 mb-3">@ViewBag.Error</div>
@@ -20,7 +25,8 @@
                 <form method="post" asp-action="ReviewerLogin">
                     @Html.AntiForgeryToken()
                     <div class="mb-4">
-                        <label class="form-label fw-semibold mb-2">Password</label>
+                        <label class="form-label fw-semibold mb-2"
+                               style="color:#2d0a4e;">Password</label>
                         <input type="password" name="password"
                                class="form-control form-control-lg"
                                placeholder="Enter reviewer password"
@@ -28,15 +34,15 @@
                                style="border:2px solid var(--amdd-400);border-radius:8px;" />
                     </div>
                     <div class="d-grid">
-                        <button type="submit"
-                                class="btn btn-lg fw-bold"
+                        <button type="submit" class="btn btn-lg fw-bold"
                                 style="background:var(--amdd-700);color:#fff;border:none;
-                                       padding:14px;font-size:1rem;border-radius:8px;">
+                                       padding:15px;font-size:1rem;border-radius:8px;">
                             🔐 Enter Dashboard
                         </button>
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
