@@ -1,5 +1,6 @@
 using AMDD_Exam.Models;
 using AMDD_Exam.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,9 @@ namespace AMDD_Exam.Controllers
     {
         private readonly ExamService     _examService;
         private readonly SubmissionStore _store;
+
+        // ── Reviewer password — change this to whatever you want ─────────
+        private const string ReviewerPassword = "AMDD2026";
 
         public ExamController(ExamService examService, SubmissionStore store)
         {
@@ -62,26 +66,47 @@ namespace AMDD_Exam.Controllers
             var submission = _examService.Evaluate(vm);
             _store.Save(submission);
 
-            // Applicant only sees a thank-you page — no scores shown
             return View("ThankYou", submission.ApplicantName);
         }
 
-        // ── Reviewer: List all submissions ───────────────────────────────
-        // URL: /Exam/Results
-        public IActionResult Results()
-            => View(_store.GetAll());
+        // ── Reviewer: Login ──────────────────────────────────────────────
+        public IActionResult ReviewerLogin()
+            => View();
 
-        // ── Reviewer: Save notes ─────────────────────────────────────────
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult SaveNotes(Guid id, string reviewerNotes)
+        public IActionResult ReviewerLogin(string password)
         {
-            var submission = _store.GetById(id);
-            if (submission == null) return NotFound();
-            submission.ReviewerNotes = reviewerNotes ?? "";
-            return RedirectToAction("Review", new { id });
+            if (password == ReviewerPassword)
+            {
+                HttpContext.Session.SetString("ReviewerAuth", "true");
+                return RedirectToAction("Results");
+            }
+            ViewBag.Error = "Incorrect password. Try again.";
+            return View();
         }
+
+        public IActionResult ReviewerLogout()
+        {
+            HttpContext.Session.Remove("ReviewerAuth");
+            return RedirectToAction("Index");
+        }
+
+        // ── Reviewer: Guard ──────────────────────────────────────────────
+        private bool IsReviewerAuthed()
+            => HttpContext.Session.GetString("ReviewerAuth") == "true";
+
+        // ── Reviewer: All submissions ────────────────────────────────────
+        public IActionResult Results()
+        {
+            if (!IsReviewerAuthed()) return RedirectToAction("ReviewerLogin");
+            return View(_store.GetAll());
+        }
+
+        // ── Reviewer: Detail ─────────────────────────────────────────────
         public IActionResult Review(Guid id)
         {
+            if (!IsReviewerAuthed()) return RedirectToAction("ReviewerLogin");
+
             var submission = _store.GetById(id);
             if (submission == null) return NotFound();
 
@@ -90,6 +115,18 @@ namespace AMDD_Exam.Controllers
                 Submission = submission,
                 Questions  = _examService.GetQuestions()
             });
+        }
+
+        // ── Reviewer: Save notes ─────────────────────────────────────────
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult SaveNotes(Guid id, string reviewerNotes)
+        {
+            if (!IsReviewerAuthed()) return RedirectToAction("ReviewerLogin");
+
+            var submission = _store.GetById(id);
+            if (submission == null) return NotFound();
+            submission.ReviewerNotes = reviewerNotes ?? "";
+            return RedirectToAction("Review", new { id });
         }
     }
 }

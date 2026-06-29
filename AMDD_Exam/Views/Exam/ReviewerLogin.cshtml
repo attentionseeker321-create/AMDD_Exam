@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Reviewer Access";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header amdd-hero text-center py-4">
+                <img src="~/favicon.png" alt="AMDD"
+                     style="width:48px;height:48px;filter:brightness(0) invert(1);margin-bottom:0.5rem;" />
+                <h4 class="mb-0 text-white fw-bold">Reviewer Access</h4>
+                <small style="color:#d9b8ff;">AMDD — Internal Use Only</small>
+            </div>
+            <div class="card-body p-4">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger small">@ViewBag.Error</div>
+                }
+                <form method="post" asp-action="ReviewerLogin">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input type="password" name="password" class="form-control form-control-lg"
+                               placeholder="Enter reviewer password" autofocus />
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg">
+                            🔐 Enter Dashboard
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

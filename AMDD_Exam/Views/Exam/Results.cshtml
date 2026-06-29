@@ -1,8 +1,113 @@
 @using AMDD_Exam.Models
 @model List<AMDD_Exam.Models.ExamSubmission>
 @{
-    ViewData["Title"] = "Reviewer — All Submissions";
+    ViewData["Title"] = "Reviewer Dashboard";
 }
+
+<div class="row justify-content-center mt-4 mb-5">
+<div class="col-lg-11">
+
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div>
+            <h3 class="mb-0 fw-bold">🔍 Reviewer Dashboard</h3>
+            <small style="color:var(--amdd-600);">Branch Banking Application Development Unit — Internal Use Only</small>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="badge fs-6 px-3 py-2" style="background:var(--amdd-700);color:#fff;">
+                @Model.Count submission(s)
+            </span>
+            <a asp-action="ReviewerLogout" class="btn btn-sm btn-outline-secondary">Logout</a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No submissions yet. Waiting for applicants to submit.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead style="background:var(--amdd-800);color:#fff;">
+                        <tr>
+                            <th class="ps-3 py-3">#</th>
+                            <th class="py-3">Applicant</th>
+                            <th class="py-3">Submitted</th>
+                            <th class="py-3 text-center">Support</th>
+                            <th class="py-3 text-center">Dev Tech</th>
+                            <th class="py-3 text-center">Attitude</th>
+                            <th class="py-3 text-center">Coding</th>
+                            <th class="py-3 text-center">Result</th>
+                            <th class="py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int row = 0; }
+                        @foreach (var s in Model)
+                        {
+                            row++;
+                            string resultText = s.Classification == ResultClassification.Developer ? "Developer"
+                                              : s.Classification == ResultClassification.Support   ? "IT Support"
+                                              : "Not a Fit";
+                            string resultColor = s.Classification == ResultClassification.Developer ? "#3b0764"
+                                               : s.Classification == ResultClassification.Support   ? "#1e3a5f"
+                                               : "#3b0a0a";
+                            <tr>
+                                <td class="ps-3 fw-semibold">@row</td>
+                                <td class="fw-bold" style="font-size:1rem;">@s.ApplicantName</td>
+                                <td>
+                                    <div style="font-size:0.85rem;">@s.SubmittedAt.ToString("MMM dd, yyyy")</div>
+                                    <div style="font-size:0.8rem;color:var(--amdd-500);">@s.SubmittedAt.ToString("hh:mm tt")</div>
+                                </td>
+                                <td class="text-center">
+                                    <div style="font-size:0.9rem;font-weight:600;color:@(s.SupportPct>=60?"#3b0764":"#7c1d47");">
+                                        @s.SupportScore / @s.SupportMax
+                                    </div>
+                                    <div style="font-size:0.78rem;color:#666;">@s.SupportPct%</div>
+                                </td>
+                                <td class="text-center">
+                                    <div style="font-size:0.9rem;font-weight:600;color:@(s.DevPct>=60?"#3b0764":"#7c1d47");">
+                                        @s.DevScore / @s.DevMax
+                                    </div>
+                                    <div style="font-size:0.78rem;color:#666;">@s.DevPct%</div>
+                                </td>
+                                <td class="text-center">
+                                    <div style="font-size:0.9rem;font-weight:600;color:@(s.AttitudePct>=60?"#3b0764":"#7c1d47");">
+                                        @s.AttitudeScore / @s.AttitudeMax
+                                    </div>
+                                    <div style="font-size:0.78rem;color:#666;">@s.AttitudePct%</div>
+                                </td>
+                                <td class="text-center">
+                                    <div style="font-size:0.85rem;font-weight:600;color:#3b0764;">
+                                        @s.CodingAttempted / @s.CodingTotal
+                                    </div>
+                                    <div style="font-size:0.78rem;color:#666;">attempted</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="px-2 py-1 rounded fw-bold"
+                                          style="background:@resultColor;color:#fff;font-size:0.8rem;white-space:nowrap;">
+                                        @resultText
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Review" asp-route-id="@s.Id"
+                                       class="btn btn-sm"
+                                       style="background:var(--amdd-700);color:#fff;border:none;white-space:nowrap;">
+                                        View Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
+</div>
+
 
 <div class="row justify-content-center mt-4 mb-5">
 <div class="col-lg-11">
