@@ -4,30 +4,30 @@
 }
 
 <div class="row justify-content-center mt-5">
-    <div class="col-md-6">
+    <div class="col-md-5">
         <div class="card shadow-sm border-0">
-            <div class="card-header amdd-hero text-center py-4">
+            <div class="card-header amdd-hero text-center py-5">
                 <img src="~/favicon.png" alt="AMDD Trophy"
-                     style="width:72px;height:72px;filter:brightness(0) invert(1);margin-bottom:0.75rem;" />
+                     style="width:72px;height:72px;filter:brightness(0) invert(1);display:block;margin:0 auto 1rem;" />
                 <h2 class="mb-1 text-white fw-bold">AMDD Skills Assessment</h2>
                 <p class="mb-0 small" style="color:#d9b8ff;">Branch Banking Application Development Unit</p>
             </div>
             <div class="card-body p-4">
-                <p class="mb-4" style="color:#4a3060;">
-                    This is a skills-based assessment for the <strong>Branch Banking Application Development Unit</strong>.
+                <p class="mb-4 text-center" style="color:#4a3060;">
                     Answer all questions honestly and to the best of your ability.
                 </p>
-
                 <form asp-action="Start" method="post">
                     @Html.AntiForgeryToken()
                     <div class="mb-3">
-                        <label asp-for="ApplicantName" class="form-label fw-semibold"></label>
+                        <label asp-for="ApplicantName" class="form-label fw-semibold">Full Name</label>
                         <input asp-for="ApplicantName" class="form-control form-control-lg"
-                               placeholder="e.g. Ches Lie P. Nio" autocomplete="off" />
+                               placeholder="e.g. Juan dela Cruz" autocomplete="off" />
                         <span asp-validation-for="ApplicantName" class="text-danger small"></span>
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-dark btn-lg">
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-lg fw-bold"
+                                style="background:var(--amdd-700);color:#fff;border:none;
+                                       padding:14px;font-size:1.05rem;border-radius:8px;">
                             Start Exam →
                         </button>
                     </div>

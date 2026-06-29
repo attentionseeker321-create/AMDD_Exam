@@ -13,11 +13,15 @@
 <div class="row justify-content-center mt-4 mb-5">
 <div class="col-lg-10">
 
-    <div class="mb-3">
-        <a asp-action="Results" class="btn btn-sm"
-           style="background:var(--amdd-700);color:#fff;border:none;">
+    <div class="mb-3 d-flex gap-2">
+        <a asp-action="Results" class="btn btn-sm fw-semibold"
+           style="background:var(--amdd-700);color:#fff;border:none;padding:6px 16px;">
             ← Back to Dashboard
         </a>
+        <button onclick="window.print()" class="btn btn-sm fw-semibold"
+                style="background:var(--amdd-600);color:#fff;border:none;padding:6px 16px;">
+            🖨️ Print / Save PDF
+        </button>
     </div>
 
     <!-- ── Classification banner ──────────────────────────────────── -->
@@ -44,12 +48,10 @@
             {
                 string bc = d.Pct >= 60 ? "#5b21b6" : (d.Pct >= 40 ? "#8b35c8" : "#9b2c68");
                 <div class="mb-4">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-semibold" style="font-size:0.9rem;">@d.Label</span>
-                        <span class="d-flex align-items-center gap-2">
-                            <span style="font-size:0.85rem;color:#555;">@d.Score / @d.Max</span>
-                            <span class="badge" style="background:@bc;color:#fff;font-size:0.8rem;min-width:48px;text-align:center;">@d.Pct%</span>
-                        </span>
+                    <div class="d-flex align-items-center mb-1" style="gap:8px;">
+                        <span class="fw-semibold flex-grow-1" style="font-size:0.9rem;">@d.Label</span>
+                        <span style="font-size:0.85rem;color:#555;white-space:nowrap;">@d.Score / @d.Max</span>
+                        <span style="background:@bc;color:#fff;font-size:0.8rem;border-radius:6px;padding:2px 10px;white-space:nowrap;min-width:52px;text-align:center;display:inline-block;">@d.Pct%</span>
                     </div>
                     <div class="progress" style="height:14px;border-radius:8px;background:#e9d5ff;">
                         <div class="progress-bar" role="progressbar"
@@ -59,12 +61,10 @@
                 </div>
             }
             <div class="mb-0">
-                <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="fw-semibold" style="font-size:0.9rem;">Coding Challenges Attempted</span>
-                    <span class="d-flex align-items-center gap-2">
-                        <span style="font-size:0.85rem;color:#555;">@s.CodingAttempted / @s.CodingTotal</span>
-                        <span class="badge" style="background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");color:#fff;font-size:0.8rem;min-width:48px;text-align:center;">@s.CodingPct%</span>
-                    </span>
+                <div class="d-flex align-items-center mb-1" style="gap:8px;">
+                    <span class="fw-semibold flex-grow-1" style="font-size:0.9rem;">Coding Challenges Attempted</span>
+                    <span style="font-size:0.85rem;color:#555;white-space:nowrap;">@s.CodingAttempted / @s.CodingTotal</span>
+                    <span style="background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");color:#fff;font-size:0.8rem;border-radius:6px;padding:2px 10px;white-space:nowrap;min-width:52px;text-align:center;display:inline-block;">@s.CodingPct%</span>
                 </div>
                 <div class="progress" style="height:14px;border-radius:8px;background:#e9d5ff;">
                     <div class="progress-bar" role="progressbar"
@@ -89,15 +89,19 @@
                 bool correct  = answered && chosen == q.CorrectIndex;
                 string rowBg  = !answered ? "" : (correct ? "background:#ede9fe;" : "background:#fdf0f5;");
                 <div class="mb-3 pb-3 border-bottom">
-                    <p class="fw-semibold mb-2 small">
-                        <span class="badge me-1" style="background:var(--amdd-700);">Q@(qn)</span>
-                        @if (q.Text.Contains('\n'))
-                        {
-                            foreach (var line in q.Text.Split('\n'))
-                            { @line<br /> }
-                        }
-                        else { @q.Text }
-                    </p>
+                    <div class="mb-2">
+                        <span style="background:var(--amdd-700);color:#ffffff;font-size:0.8rem;
+                                     font-weight:700;padding:3px 10px;border-radius:5px;
+                                     display:inline-block;margin-bottom:6px;">Q@(qn)</span>
+                        <div class="fw-semibold" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">
+                            @if (q.Text.Contains('\n'))
+                            {
+                                foreach (var line in q.Text.Split('\n'))
+                                { <span>@line</span><br /> }
+                            }
+                            else { @q.Text }
+                        </div>
+                    </div>
                     <div class="list-group list-group-flush small">
                         @for (int i = 0; i < q.Choices.Count; i++)
                         {
@@ -135,10 +139,14 @@
                 qn++;
                 s.OpenAnswers.TryGetValue(q.Id, out string codeAns);
                 <div class="mb-4 pb-4 border-bottom">
-                    <p class="fw-semibold mb-2 small">
-                        <span class="badge me-1" style="background:var(--amdd-700);">Q@(qn)</span>
-                        @foreach (var line in q.Text.Split('\n')) { @line<br /> }
-                    </p>
+                    <div class="mb-2">
+                        <span style="background:var(--amdd-700);color:#ffffff;font-size:0.8rem;
+                                     font-weight:700;padding:3px 10px;border-radius:5px;
+                                     display:inline-block;margin-bottom:6px;">Q@(qn)</span>
+                        <div class="fw-semibold" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">
+                            @foreach (var line in q.Text.Split('\n')) { <span>@line</span><br /> }
+                        </div>
+                    </div>
                     @if (!string.IsNullOrWhiteSpace(q.CodingPrompt))
                     {
                         <div class="alert alert-secondary small py-2 mb-2">
@@ -162,10 +170,12 @@
                 qn++;
                 s.OpenAnswers.TryGetValue(q.Id, out string essayAns);
                 <div class="mb-4 pb-4 border-bottom">
-                    <p class="fw-semibold mb-2 small">
-                        <span class="badge me-1" style="background:var(--amdd-700);">Q@(qn)</span>
-                        @q.Text
-                    </p>
+                    <div class="mb-2">
+                        <span style="background:var(--amdd-700);color:#ffffff;font-size:0.8rem;
+                                     font-weight:700;padding:3px 10px;border-radius:5px;
+                                     display:inline-block;margin-bottom:6px;">Q@(qn)</span>
+                        <div class="fw-semibold" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">@q.Text</div>
+                    </div>
                     <div class="p-3 rounded small" style="background:var(--amdd-50);border:1px solid #e9d5ff;white-space:pre-wrap;min-height:60px;">
                         @(string.IsNullOrWhiteSpace(essayAns) ? "(no answer submitted)" : essayAns)
                     </div>

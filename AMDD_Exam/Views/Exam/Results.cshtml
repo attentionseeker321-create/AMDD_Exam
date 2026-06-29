@@ -13,10 +13,18 @@
             <small style="color:var(--amdd-600);">Branch Banking Application Development Unit — Internal Use Only</small>
         </div>
         <div class="d-flex gap-2 align-items-center">
-            <span class="badge fs-6 px-3 py-2" style="background:var(--amdd-700);color:#fff;">
+            <span class="fw-bold px-3 py-2 rounded"
+                  style="background:var(--amdd-700);color:#fff;font-size:0.95rem;">
                 @Model.Count submission(s)
             </span>
-            <a asp-action="ReviewerLogout" class="btn btn-sm btn-outline-secondary">Logout</a>
+            <button onclick="window.print()" class="btn btn-sm fw-semibold"
+                    style="background:var(--amdd-600);color:#fff;border:none;padding:6px 14px;">
+                🖨️ Print All
+            </button>
+            <a asp-action="ReviewerLogout" class="btn btn-sm fw-semibold"
+               style="background:#fff;color:var(--amdd-700);border:1px solid var(--amdd-500);padding:6px 14px;">
+                Logout
+            </a>
         </div>
     </div>
 
