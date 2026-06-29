@@ -28,15 +28,13 @@
 /* ── Base ──────────────────────────────────────────────────────────── */
 html {
     font-size: 14px;
-    position: relative;
-    min-height: 100%;
 }
 @media (min-width: 768px) {
     html { font-size: 16px; }
 }
 
 body {
-    margin-bottom: 60px;
+    margin-bottom: 100px;
     background-color: var(--amdd-50);
     color: #1a0a2e;
 }
@@ -63,10 +61,8 @@ a:hover {
 
 /* ── Footer ────────────────────────────────────────────────────────── */
 .footer {
-    position: absolute;
-    bottom: 0;
     width: 100%;
-    line-height: 60px;
+    padding: 12px 0;
     background-color: var(--amdd-900);
     color: var(--amdd-400) !important;
     border-top: 2px solid var(--amdd-700) !important;
