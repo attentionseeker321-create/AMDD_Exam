@@ -7,9 +7,6 @@ using System.Text.Json;
 
 namespace AMDD_Exam.Services
 {
-    /// <summary>
-    /// Persists submissions to a JSON file so they survive app restarts.
-    /// </summary>
     public class SubmissionStore
     {
         private readonly string _filePath;
@@ -18,10 +15,32 @@ namespace AMDD_Exam.Services
 
         public SubmissionStore()
         {
-            // On Render, /app is the working directory — writable
-            var dir = Path.Combine(AppContext.BaseDirectory, "data");
-            Directory.CreateDirectory(dir);
-            _filePath = Path.Combine(dir, "submissions.json");
+            // Try multiple writable locations — works on Railway, Render, and local
+            string dir = null;
+            var candidates = new[]
+            {
+                Path.Combine(AppContext.BaseDirectory, "data"),
+                Path.Combine(Path.GetTempPath(), "amdd_data"),
+                "/tmp/amdd_data"
+            };
+
+            foreach (var candidate in candidates)
+            {
+                try
+                {
+                    Directory.CreateDirectory(candidate);
+                    // Test write access
+                    var testFile = Path.Combine(candidate, "test.tmp");
+                    File.WriteAllText(testFile, "test");
+                    File.Delete(testFile);
+                    dir = candidate;
+                    break;
+                }
+                catch { /* try next */ }
+            }
+
+            // Fallback: memory only (no persistence but won't crash)
+            _filePath = dir != null ? Path.Combine(dir, "submissions.json") : null;
             _cache = Load();
         }
 
@@ -29,7 +48,6 @@ namespace AMDD_Exam.Services
         {
             lock (_lock)
             {
-                // Replace if exists, otherwise add
                 var existing = _cache.FindIndex(s => s.Id == submission.Id);
                 if (existing >= 0) _cache[existing] = submission;
                 else _cache.Add(submission);
@@ -53,22 +71,27 @@ namespace AMDD_Exam.Services
         {
             try
             {
-                if (File.Exists(_filePath))
+                if (_filePath != null && File.Exists(_filePath))
                 {
                     var json = File.ReadAllText(_filePath);
                     return JsonSerializer.Deserialize<List<ExamSubmission>>(json)
                            ?? new List<ExamSubmission>();
                 }
             }
-            catch { /* corrupt file — start fresh */ }
+            catch { }
             return new List<ExamSubmission>();
         }
 
         private void Persist()
         {
-            var json = JsonSerializer.Serialize(_cache,
-                new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(_filePath, json);
+            try
+            {
+                if (_filePath == null) return;
+                var json = JsonSerializer.Serialize(_cache,
+                    new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(_filePath, json);
+            }
+            catch { /* don't crash the app if file write fails */ }
         }
     }
 }
