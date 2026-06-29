@@ -1,0 +1,98 @@
+@using AMDD_Exam.Models
+@model List<AMDD_Exam.Models.ExamSubmission>
+@{
+    ViewData["Title"] = "Reviewer — All Submissions";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+<div class="col-lg-11">
+
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div>
+            <h3 class="mb-0 fw-bold">🔍 Reviewer Dashboard</h3>
+            <small style="color:var(--amdd-600);">Branch Banking Application Development Unit — Internal Use Only</small>
+        </div>
+        <span class="badge fs-6 px-3 py-2" style="background:var(--amdd-700);">
+            @Model.Count submission(s)
+        </span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No submissions yet.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead style="background:var(--amdd-800);color:#fff;">
+                        <tr>
+                            <th class="ps-4 py-3">#</th>
+                            <th class="py-3">Applicant</th>
+                            <th class="py-3">Submitted</th>
+                            <th class="py-3 text-center">Support</th>
+                            <th class="py-3 text-center">Dev Tech</th>
+                            <th class="py-3 text-center">Attitude</th>
+                            <th class="py-3 text-center">Coding</th>
+                            <th class="py-3 text-center">Result</th>
+                            <th class="py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int row = 0; }
+                        @foreach (var s in Model)
+                        {
+                            row++;
+                            string badgeBg = s.Classification == ResultClassification.Developer ? "#5b21b6"
+                                           : s.Classification == ResultClassification.Support   ? "var(--amdd-500)"
+                                           : "#9b2c68";
+                            <tr>
+                                <td class="ps-4">@row</td>
+                                <td class="fw-semibold">@s.ApplicantName</td>
+                                <td>
+                                    <small>@s.SubmittedAt.ToString("MMM dd, yyyy")</small><br/>
+                                    <small style="color:var(--amdd-500);">@s.SubmittedAt.ToString("hh:mm tt")</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge" style="background:@(s.SupportPct>=60?"#5b21b6":"#9b2c68");color:#fff;font-size:0.78rem;min-width:90px;display:inline-block;">
+                                        @s.SupportScore / @s.SupportMax &nbsp; @s.SupportPct%
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge" style="background:@(s.DevPct>=60?"#5b21b6":"#9b2c68");color:#fff;font-size:0.78rem;min-width:90px;display:inline-block;">
+                                        @s.DevScore / @s.DevMax &nbsp; @s.DevPct%
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge" style="background:@(s.AttitudePct>=60?"#5b21b6":"#9b2c68");color:#fff;font-size:0.78rem;min-width:90px;display:inline-block;">
+                                        @s.AttitudeScore / @s.AttitudeMax &nbsp; @s.AttitudePct%
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge" style="background:var(--amdd-600);color:#fff;font-size:0.78rem;min-width:90px;display:inline-block;">
+                                        @s.CodingAttempted / @s.CodingTotal attempted
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge px-2 py-1 fw-bold" style="background:@badgeBg;color:#fff;font-size:0.8rem;">
+                                        @s.ClassificationLabel
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Review" asp-route-id="@s.Id"
+                                       class="btn btn-sm"
+                                       style="background:var(--amdd-700);color:#fff;border:none;">
+                                        View Detail
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>
+</div>

@@ -1,0 +1,220 @@
+@using AMDD_Exam.Models
+@model AMDD_Exam.Models.ReviewerDetailViewModel
+@{
+    ViewData["Title"] = "Review — " + Model.Submission.ApplicantName;
+    var s  = Model.Submission;
+    var qs = Model.Questions.ToDictionary(q => q.Id);
+
+    string badgeBg = s.Classification == ResultClassification.Developer ? "#5b21b6"
+                   : s.Classification == ResultClassification.Support   ? "var(--amdd-500)"
+                   : "#9b2c68";
+}
+
+<div class="row justify-content-center mt-4 mb-5">
+<div class="col-lg-10">
+
+    <div class="mb-3">
+        <a asp-action="Results" class="btn btn-sm"
+           style="background:var(--amdd-700);color:#fff;border:none;">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <!-- ── Classification banner ──────────────────────────────────── -->
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header text-white text-center py-4" style="background:linear-gradient(135deg,var(--amdd-900),var(--amdd-700));">
+            <h3 class="mb-1 fw-bold">@s.ApplicantName</h3>
+            <span class="badge px-3 py-2 fs-6 fw-bold" style="background:@badgeBg;">@s.ClassificationLabel</span>
+            <p class="mb-0 mt-2 small opacity-75">Submitted: @s.SubmittedAt.ToString("MMMM dd, yyyy — hh:mm tt")</p>
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-light border mb-4">@s.Remarks</div>
+
+            <!-- Score bars -->
+            <h6 class="fw-bold text-uppercase mb-3 small" style="color:var(--amdd-700);">📊 Score Breakdown</h6>
+            @{
+                var dims = new[]
+                {
+                    (Label:"IT Support Technical (incl. Security)", Score:s.SupportScore,  Max:s.SupportMax,  Pct:s.SupportPct),
+                    (Label:"Development Technical",                  Score:s.DevScore,      Max:s.DevMax,      Pct:s.DevPct),
+                    (Label:"Attitude & Behavior (gate ≥ 60%)",       Score:s.AttitudeScore, Max:s.AttitudeMax, Pct:s.AttitudePct),
+                };
+            }
+            @foreach (var d in dims)
+            {
+                string bc = d.Pct >= 60 ? "#5b21b6" : (d.Pct >= 40 ? "#8b35c8" : "#9b2c68");
+                <div class="mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="fw-semibold" style="font-size:0.9rem;">@d.Label</span>
+                        <span class="d-flex align-items-center gap-2">
+                            <span style="font-size:0.85rem;color:#555;">@d.Score / @d.Max</span>
+                            <span class="badge" style="background:@bc;color:#fff;font-size:0.8rem;min-width:48px;text-align:center;">@d.Pct%</span>
+                        </span>
+                    </div>
+                    <div class="progress" style="height:14px;border-radius:8px;background:#e9d5ff;">
+                        <div class="progress-bar" role="progressbar"
+                             style="width:@d.Pct%;background:@bc;border-radius:8px;transition:width 1s ease;"
+                             aria-valuenow="@d.Pct" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            }
+            <div class="mb-0">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="fw-semibold" style="font-size:0.9rem;">Coding Challenges Attempted</span>
+                    <span class="d-flex align-items-center gap-2">
+                        <span style="font-size:0.85rem;color:#555;">@s.CodingAttempted / @s.CodingTotal</span>
+                        <span class="badge" style="background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");color:#fff;font-size:0.8rem;min-width:48px;text-align:center;">@s.CodingPct%</span>
+                    </span>
+                </div>
+                <div class="progress" style="height:14px;border-radius:8px;background:#e9d5ff;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width:@s.CodingPct%;background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");border-radius:8px;transition:width 1s ease;"
+                         aria-valuenow="@s.CodingPct" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── MCQ Answers ──────────────────────────────────────────────── -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header amdd-section-header py-3">
+            <h5 class="mb-0">📋 Multiple Choice Answers</h5>
+        </div>
+        <div class="card-body p-4">
+            @{ int qn = 0; }
+            @foreach (var q in Model.Questions.Where(q => q.Type == "mcq"))
+            {
+                qn++;
+                bool answered = s.Answers.TryGetValue(q.Id, out int chosen);
+                bool correct  = answered && chosen == q.CorrectIndex;
+                string rowBg  = !answered ? "" : (correct ? "background:#ede9fe;" : "background:#fdf0f5;");
+                <div class="mb-3 pb-3 border-bottom">
+                    <p class="fw-semibold mb-2 small">
+                        <span class="badge me-1" style="background:var(--amdd-700);">Q@(qn)</span>
+                        @if (q.Text.Contains('\n'))
+                        {
+                            foreach (var line in q.Text.Split('\n'))
+                            { @line<br /> }
+                        }
+                        else { @q.Text }
+                    </p>
+                    <div class="list-group list-group-flush small">
+                        @for (int i = 0; i < q.Choices.Count; i++)
+                        {
+                            bool isCorrect  = i == q.CorrectIndex;
+                            bool isChosen   = answered && i == chosen;
+                            string bg = isCorrect && isChosen ? "background:#ddd6fe;border-left:4px solid #5b21b6;"
+                                      : isCorrect             ? "background:#ede9fe;border-left:4px solid #a78bfa;"
+                                      : isChosen              ? "background:#fde8f0;border-left:4px solid #9b2c68;"
+                                      : "";
+                            <div class="list-group-item py-1 px-2" style="@bg border-radius:4px;margin-bottom:3px;">
+                                @if (isCorrect && isChosen) { <span class="me-1">✅</span> }
+                                else if (isChosen)          { <span class="me-1">❌</span> }
+                                else if (isCorrect)         { <span class="me-1">🟣</span> }
+                                @q.Choices[i]
+                            </div>
+                        }
+                    </div>
+                    @if (!answered)
+                    {
+                        <small class="text-danger">⚠️ Not answered</small>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ── Coding Answers ───────────────────────────────────────────── -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header amdd-section-header py-3">
+            <h5 class="mb-0">💻 Coding Challenge Answers</h5>
+        </div>
+        <div class="card-body p-4">
+            @foreach (var q in Model.Questions.Where(q => q.Type == "code"))
+            {
+                qn++;
+                s.OpenAnswers.TryGetValue(q.Id, out string codeAns);
+                <div class="mb-4 pb-4 border-bottom">
+                    <p class="fw-semibold mb-2 small">
+                        <span class="badge me-1" style="background:var(--amdd-700);">Q@(qn)</span>
+                        @foreach (var line in q.Text.Split('\n')) { @line<br /> }
+                    </p>
+                    @if (!string.IsNullOrWhiteSpace(q.CodingPrompt))
+                    {
+                        <div class="alert alert-secondary small py-2 mb-2">
+                            @foreach (var line in q.CodingPrompt.Split('\n')) { @line<br /> }
+                        </div>
+                    }
+                    <pre class="code-editor p-3 rounded small" style="min-height:80px;white-space:pre-wrap;">@(string.IsNullOrWhiteSpace(codeAns) ? "(no answer submitted)" : codeAns)</pre>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ── Essay Answers ────────────────────────────────────────────── -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header amdd-section-header py-3">
+            <h5 class="mb-0">✍️ Essay Answers</h5>
+        </div>
+        <div class="card-body p-4">
+            @foreach (var q in Model.Questions.Where(q => q.Type == "essay"))
+            {
+                qn++;
+                s.OpenAnswers.TryGetValue(q.Id, out string essayAns);
+                <div class="mb-4 pb-4 border-bottom">
+                    <p class="fw-semibold mb-2 small">
+                        <span class="badge me-1" style="background:var(--amdd-700);">Q@(qn)</span>
+                        @q.Text
+                    </p>
+                    <div class="p-3 rounded small" style="background:var(--amdd-50);border:1px solid #e9d5ff;white-space:pre-wrap;min-height:60px;">
+                        @(string.IsNullOrWhiteSpace(essayAns) ? "(no answer submitted)" : essayAns)
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ── Self-Assessment ──────────────────────────────────────────── -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header amdd-section-header py-3">
+            <h5 class="mb-0">⭐ Self-Assessment Ratings</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 small align-middle">
+                    <thead style="background:var(--amdd-100);">
+                        <tr>
+                            <th class="ps-4 py-2">Skill</th>
+                            <th class="py-2 text-center">Rating</th>
+                            <th class="py-2">Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var skill in SelfAssessSkills.Skills)
+                        {
+                            int rating = s.SelfRatings != null && s.SelfRatings.TryGetValue(skill, out int r) ? r : 0;
+                            string level = rating switch { 1 => "Beginner", 2 => "Elementary", 3 => "Intermediate", 4 => "Proficient", 5 => "Advanced", _ => "Not rated" };
+                            string starColor = rating >= 4 ? "var(--amdd-600)" : rating >= 2 ? "var(--amdd-400)" : "#ccc";
+                            <tr>
+                                <td class="ps-4 fw-semibold">@skill</td>
+                                <td class="text-center">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span style="color:@(i<=rating?starColor:"#ddd");font-size:1.1rem;">★</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge" style="background:@(rating>=4?"#5b21b6":rating>=2?"var(--amdd-500)":"#aaa");">
+                                        @level
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: amdd-exam
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production

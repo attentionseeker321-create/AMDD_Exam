@@ -1,0 +1,303 @@
+﻿/* ══════════════════════════════════════════════════════════════════════
+   AMDD Skills Exam — Purple Theme
+   Branch Banking Application Development Unit
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── AMDD Purple Palette ─────────────────────────────────────────────
+   --amdd-900  #2d0a4e   (deepest, navbar bg)
+   --amdd-800  #4a0e7a   (dark purple)
+   --amdd-700  #6a1fa3   (primary purple)
+   --amdd-600  #8b35c8   (medium purple)
+   --amdd-500  #a855f7   (base purple / Bootstrap "purple")
+   --amdd-400  #c084fc   (light purple)
+   --amdd-100  #f3e8ff   (very light tint, backgrounds)
+   --amdd-50   #faf5ff   (near-white tint)
+   ─────────────────────────────────────────────────────────────────── */
+
+:root {
+    --amdd-900: #2d0a4e;
+    --amdd-800: #4a0e7a;
+    --amdd-700: #6a1fa3;
+    --amdd-600: #8b35c8;
+    --amdd-500: #a855f7;
+    --amdd-400: #c084fc;
+    --amdd-100: #f3e8ff;
+    --amdd-50:  #faf5ff;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────── */
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+@media (min-width: 768px) {
+    html { font-size: 16px; }
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: var(--amdd-50);
+    color: #1a0a2e;
+}
+
+a {
+    color: var(--amdd-700);
+}
+a:hover {
+    color: var(--amdd-900);
+}
+
+/* ── Navbar ────────────────────────────────────────────────────────── */
+.amdd-navbar {
+    background: linear-gradient(135deg, var(--amdd-900) 0%, var(--amdd-800) 100%) !important;
+    border-bottom: 2px solid var(--amdd-600) !important;
+    box-shadow: 0 2px 12px rgba(106, 31, 163, 0.35);
+}
+
+.amdd-navbar .navbar-brand {
+    color: #fff !important;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    line-height: 60px;
+    background-color: var(--amdd-900);
+    color: var(--amdd-400) !important;
+    border-top: 2px solid var(--amdd-700) !important;
+}
+.footer a { color: var(--amdd-400); }
+.footer a:hover { color: #fff; }
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+.btn-primary,
+.btn-dark {
+    background-color: var(--amdd-700) !important;
+    border-color: var(--amdd-800) !important;
+    color: #fff !important;
+}
+.btn-primary:hover,
+.btn-dark:hover {
+    background-color: var(--amdd-800) !important;
+    border-color: var(--amdd-900) !important;
+}
+.btn-success {
+    background-color: #5b21b6 !important;
+    border-color: #4c1d95 !important;
+    color: #fff !important;
+}
+.btn-success:hover {
+    background-color: #4c1d95 !important;
+}
+.btn-outline-dark {
+    color: var(--amdd-700) !important;
+    border-color: var(--amdd-700) !important;
+}
+.btn-outline-dark:hover {
+    background-color: var(--amdd-700) !important;
+    color: #fff !important;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────── */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Section header cards on the exam page */
+.card-header.bg-dark,
+.card-header.amdd-section-header {
+    background: linear-gradient(135deg, var(--amdd-800) 0%, var(--amdd-700) 100%) !important;
+    color: #fff !important;
+    border-bottom: 1px solid var(--amdd-600);
+}
+
+/* Start page card header */
+.card-header.amdd-hero {
+    background: linear-gradient(135deg, var(--amdd-900) 0%, var(--amdd-700) 100%) !important;
+    color: #fff !important;
+}
+
+/* ── Result classification banners ──────────────────────────────────── */
+/* Developer → purple success */
+.card-header.bg-success {
+    background: linear-gradient(135deg, #4c1d95 0%, var(--amdd-700) 100%) !important;
+    color: #fff !important;
+}
+/* IT Support → purple info */
+.card-header.bg-info {
+    background: linear-gradient(135deg, var(--amdd-600) 0%, var(--amdd-400) 100%) !important;
+    color: #fff !important;
+}
+/* Not a Fit → deep red-purple */
+.card-header.bg-danger {
+    background: linear-gradient(135deg, #7c1d47 0%, #9b2c68 100%) !important;
+    color: #fff !important;
+}
+
+/* ── Progress bars ──────────────────────────────────────────────────── */
+.progress {
+    background-color: #e9d5ff;
+    border-radius: 8px;
+}
+.progress-bar.bg-dark {
+    background-color: var(--amdd-700) !important;
+}
+.progress-bar.bg-success {
+    background-color: #5b21b6 !important;
+}
+.progress-bar.bg-warning {
+    background-color: #c084fc !important;
+}
+.progress-bar.bg-danger {
+    background-color: #9b2c68 !important;
+}
+
+/* ── Badges ─────────────────────────────────────────────────────────── */
+.badge.bg-dark,
+.badge.bg-secondary {
+    background-color: var(--amdd-700) !important;
+    color: #fff !important;
+}
+.badge.bg-success {
+    background-color: #5b21b6 !important;
+    color: #fff !important;
+}
+.badge.bg-danger {
+    background-color: #9b2c68 !important;
+    color: #fff !important;
+}
+
+/* ── Timer badge ─────────────────────────────────────────────────────── */
+#timer-badge {
+    background-color: var(--amdd-800) !important;
+    font-family: 'Consolas', monospace;
+    letter-spacing: 0.05em;
+    min-width: 100px;
+    text-align: center;
+    border: 1px solid var(--amdd-500);
+    border-radius: 8px;
+    transition: background-color 0.5s ease;
+}
+
+/* ── Multiple-choice labels ──────────────────────────────────────────── */
+.choice-label {
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    border-left: 3px solid transparent;
+}
+.choice-label:hover {
+    background-color: var(--amdd-100);
+    border-left-color: var(--amdd-500);
+}
+.choice-label.active {
+    background-color: var(--amdd-700) !important;
+    color: #fff !important;
+    border-color: var(--amdd-800) !important;
+    border-left-color: var(--amdd-400) !important;
+}
+.choice-label.active .form-check-input {
+    accent-color: #fff;
+}
+
+/* ── Code editor textarea ────────────────────────────────────────────── */
+.code-editor {
+    background-color: #1a1040;
+    color: #f0e6ff;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9rem;
+    border: 1px solid var(--amdd-600);
+    border-radius: 8px;
+    resize: vertical;
+    padding: 14px;
+    line-height: 1.7;
+}
+.code-editor:focus {
+    background-color: #1a1040;
+    color: #fff;
+    border-color: var(--amdd-400);
+    box-shadow: 0 0 0 0.2rem rgba(168, 85, 247, 0.30);
+    outline: none;
+}
+.code-editor::placeholder {
+    color: #9b6fd4;
+    opacity: 1;
+}
+
+/* ── Alerts ─────────────────────────────────────────────────────────── */
+.alert-info {
+    background-color: var(--amdd-100);
+    border-color: var(--amdd-400);
+    color: var(--amdd-900);
+}
+.alert-secondary {
+    background-color: #ede9fe;
+    border-color: #ddd6fe;
+    color: #3b0764;
+}
+.alert-light {
+    background-color: var(--amdd-50);
+    border-color: #e9d5ff;
+    color: #1a0a2e;
+}
+.alert-success {
+    background-color: #ede9fe;
+    border-color: #c4b5fd;
+    color: #3b0764;
+}
+.alert-warning {
+    background-color: #fdf4ff;
+    border-color: var(--amdd-400);
+    color: var(--amdd-900);
+}
+
+/* ── Tables ─────────────────────────────────────────────────────────── */
+.table-secondary th,
+.table-secondary {
+    background-color: #ede9fe !important;
+    color: var(--amdd-900) !important;
+}
+
+/* ── Misc ────────────────────────────────────────────────────────────── */
+.border-top  { border-top:    1px solid #e9d5ff !important; }
+.border-bottom { border-bottom: 1px solid #e9d5ff !important; }
+.box-shadow  { box-shadow: 0 .25rem .75rem rgba(106, 31, 163, .12); }
+
+.question-block {
+    transition: background-color 0.12s ease;
+}
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: var(--amdd-700);
+    border-color: var(--amdd-800);
+}
+
+/* ── Essay textarea ──────────────────────────────────────────────────── */
+.essay-editor {
+    background-color: var(--amdd-50);
+    color: #1a0a2e;
+    font-size: 0.925rem;
+    border: 1px solid var(--amdd-400);
+    border-radius: 8px;
+    resize: vertical;
+    padding: 12px;
+    line-height: 1.7;
+}
+.essay-editor:focus {
+    border-color: var(--amdd-600);
+    box-shadow: 0 0 0 0.2rem rgba(139,53,200,0.20);
+    outline: none;
+}

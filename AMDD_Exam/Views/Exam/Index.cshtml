@@ -1,0 +1,42 @@
+@model AMDD_Exam.Models.ExamStartViewModel
+@{
+    ViewData["Title"] = "Skills Assessment";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header amdd-hero text-center py-4">
+                <img src="~/favicon.png" alt="AMDD Trophy"
+                     style="width:72px;height:72px;filter:brightness(0) invert(1);margin-bottom:0.75rem;" />
+                <h2 class="mb-1 text-white fw-bold">AMDD Skills Assessment</h2>
+                <p class="mb-0 small" style="color:#d9b8ff;">Branch Banking Application Development Unit</p>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-4" style="color:#4a3060;">
+                    This is a skills-based assessment for the <strong>Branch Banking Application Development Unit</strong>.
+                    Answer all questions honestly and to the best of your ability.
+                </p>
+
+                <form asp-action="Start" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label asp-for="ApplicantName" class="form-label fw-semibold"></label>
+                        <input asp-for="ApplicantName" class="form-control form-control-lg"
+                               placeholder="e.g. Juan dela Cruz" autocomplete="off" />
+                        <span asp-validation-for="ApplicantName" class="text-danger small"></span>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-dark btn-lg">
+                            Start Exam →
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

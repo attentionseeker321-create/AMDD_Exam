@@ -1,0 +1,21 @@
+@model string
+@{
+    ViewData["Title"] = "Exam Submitted";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow border-0">
+            <div class="card-header amdd-hero py-5">
+                <img src="~/favicon.png" alt="Trophy"
+                     style="width:80px;height:80px;filter:brightness(0) invert(1);" />
+                <h2 class="mt-3 mb-1 fw-bold text-white">Thank You, @Model!</h2>
+                <p class="mb-0 text-white opacity-75">Your exam has been successfully submitted.</p>
+            </div>
+            <div class="card-body p-4">
+                <p class="mb-3">The <strong>Branch Banking Application Development Unit</strong> team will review your responses and get back to you.</p>
+                <p class="text-muted small">You may now close this window.</p>
+            </div>
+        </div>
+    </div>
+</div>

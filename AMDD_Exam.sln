@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.37327.17
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMDD_Exam", "AMDD_Exam\AMDD_Exam.csproj", "{EC813C53-6EDF-4CD5-B77F-B2EF0A9B2B59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EC813C53-6EDF-4CD5-B77F-B2EF0A9B2B59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC813C53-6EDF-4CD5-B77F-B2EF0A9B2B59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC813C53-6EDF-4CD5-B77F-B2EF0A9B2B59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC813C53-6EDF-4CD5-B77F-B2EF0A9B2B59}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4D6DB90-34F4-4F13-8C77-7F094E4F1094}
+	EndGlobalSection
+EndGlobal

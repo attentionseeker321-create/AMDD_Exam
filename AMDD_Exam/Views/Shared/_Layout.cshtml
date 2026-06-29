@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - AMDD Skills Exam</title>
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark amdd-navbar border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2" asp-controller="Exam" asp-action="Index">
+                    <img src="~/favicon.png" alt="AMDD Trophy" style="width:28px;height:28px;filter:brightness(0) invert(1);" />
+                    AMDD Skills Exam
+                </a>
+                <span class="navbar-text small" style="color: #d9b8ff;">
+                    Branch Banking Application Development Unit
+                </span>
+                <a asp-controller="Exam" asp-action="Results"
+                   class="btn btn-sm ms-3"
+                   style="background:var(--amdd-700);color:#fff;border:none;font-size:0.75rem;">
+                    🔍 Reviewer
+                </a>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-4">
+        <div class="container py-2 small">
+            &copy; @DateTime.Now.Year — Branch Banking Application Development Unit &mdash; Internal Use Only
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

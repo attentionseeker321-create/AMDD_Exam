@@ -1,0 +1,323 @@
+@using AMDD_Exam.Models
+@model List<AMDD_Exam.Models.ExamQuestion>
+@{
+    ViewData["Title"] = "Skills Assessment";
+    string applicantName = ViewBag.ApplicantName;
+    var skills = ViewBag.Skills as List<string>;
+
+    // Applicant sees questions in this order: all MCQ mixed → coding → essay
+    // No section headers — just numbered Q1, Q2 ...
+    var mcq    = Model.Where(q => q.Type == "mcq").ToList();
+    var coding = Model.Where(q => q.Type == "code").ToList();
+    var essay  = Model.Where(q => q.Type == "essay").ToList();
+    var ordered = mcq.Concat(coding).Concat(essay).ToList();
+
+    int totalAnswerable = ordered.Count + 1; // +1 for self-assessment block
+}
+
+<div class="row justify-content-center">
+<div class="col-lg-9">
+
+    <div class="d-flex align-items-center justify-content-between my-4 flex-wrap gap-2">
+        <div>
+            <h3 class="mb-0 fw-bold">AMDD Skills Assessment</h3>
+            <small style="color:var(--amdd-600);">Applicant: <strong>@applicantName</strong></small>
+        </div>
+        <div id="timer-badge" class="px-3 py-2 text-white fw-bold fs-6"
+             style="background:var(--amdd-800);border:1px solid var(--amdd-500);border-radius:8px;font-family:'Consolas',monospace;min-width:110px;text-align:center;">
+            ⏱ <span id="timer">75:00</span>
+        </div>
+    </div>
+
+    <div class="mb-1 d-flex justify-content-between">
+        <small style="color:var(--amdd-600);">Progress</small>
+        <small id="progressLabel" style="color:var(--amdd-600);">0 / @totalAnswerable answered</small>
+    </div>
+    <div class="progress mb-4" style="height:8px;">
+        <div class="progress-bar" id="progressBar" role="progressbar"
+             style="width:0%;background:var(--amdd-600);" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <form asp-action="Submit" method="post" id="examForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="applicantName" value="@applicantName" />
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header amdd-section-header py-3">
+                <h5 class="mb-0">📋 Assessment Questions</h5>
+                <small style="color:#d9b8ff;">Answer all questions to the best of your ability.</small>
+            </div>
+            <div class="card-body p-4">
+
+            @{ int qNum = 0; }
+            @foreach (var q in ordered)
+            {
+                qNum++;
+                bool isLast = (q == ordered.Last());
+                <div class="question-block mb-4 pb-4 @(isLast ? "" : "border-bottom")"
+                     data-id="@q.Id"
+                     data-type="@q.Type">
+
+                    <div class="mb-3">
+                        <span class="badge mb-2 d-inline-block" style="background:var(--amdd-700);font-size:0.8rem;">Q@(qNum)</span>
+                        <div class="fw-semibold" style="font-size:1rem;line-height:1.6;color:#1a0a2e;">
+                            @if (q.Text.Contains('\n'))
+                            {
+                                foreach (var line in q.Text.Split('\n'))
+                                {
+                                    if (string.IsNullOrWhiteSpace(line)) { <br /> }
+                                    else { <span>@line</span><br /> }
+                                }
+                            }
+                            else
+                            {
+                                @q.Text
+                            }
+                        </div>
+                    </div>
+
+                    @if (q.Type == "mcq")
+                    {
+                        <div class="list-group">
+                            @for (int i = 0; i < q.Choices.Count; i++)
+                            {
+                                string cid = $"q{q.Id}_c{i}";
+                                <label class="list-group-item list-group-item-action choice-label" for="@cid">
+                                    <input class="form-check-input me-2 choice-radio"
+                                           type="radio"
+                                           name="answers[@q.Id]"
+                                           id="@cid"
+                                           value="@i" />
+                                    @q.Choices[i]
+                                </label>
+                            }
+                        </div>
+                    }
+                    else if (q.Type == "code")
+                    {
+                        if (!string.IsNullOrEmpty(q.CodingPrompt))
+                        {
+                            <div class="alert alert-secondary small py-2 mb-2">
+                                <strong>📌 Instructions:</strong><br />
+                                @foreach (var line in q.CodingPrompt.Split('\n'))
+                                {
+                                    @line<br />
+                                }
+                            </div>
+                        }
+                        <textarea name="openAnswers[@q.Id]"
+                                  class="form-control code-editor coding-answer"
+                                  data-qid="@q.Id"
+                                  rows="11"
+                                  placeholder="// Write your @q.CodingLanguageHint code here..."
+                                  spellcheck="false"></textarea>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small style="color:var(--amdd-500);">Language: <em>@q.CodingLanguageHint</em></small>
+                            <small id="cc_@q.Id" style="color:var(--amdd-500);">0 chars</small>
+                        </div>
+                    }
+                    else if (q.Type == "essay")
+                    {
+                        if (!string.IsNullOrEmpty(q.EssayBullets))
+                        {
+                            <div class="alert alert-secondary small py-2 mb-2">
+                                <strong>📌 Include the following:</strong><br />
+                                @foreach (var line in q.EssayBullets.Split('\n'))
+                                {
+                                    @line<br />
+                                }
+                            </div>
+                        }
+                        <textarea name="openAnswers[@q.Id]"
+                                  class="form-control essay-editor coding-answer"
+                                  data-qid="@q.Id"
+                                  rows="8"
+                                  placeholder="Write your answer here..."
+                                  spellcheck="true"></textarea>
+                        <small id="cc_@q.Id" style="color:var(--amdd-500);">0 chars</small>
+                    }
+                </div>
+            }
+
+            </div>
+        </div>
+
+        <!-- ── Self-Assessment ────────────────────────────────────────── -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header amdd-section-header py-3">
+                <h5 class="mb-0">⭐ Self-Assessment</h5>
+                <small style="color:#d9b8ff;">Rate yourself honestly from 1 (Beginner) to 5 (Advanced) for each skill.</small>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle" id="selfTable" style="table-layout:fixed;">
+                        <colgroup>
+                            <col style="width:40%;" />
+                            <col style="width:12%;" />
+                            <col style="width:12%;" />
+                            <col style="width:12%;" />
+                            <col style="width:12%;" />
+                            <col style="width:12%;" />
+                        </colgroup>
+                        <thead>
+                            <tr style="background:var(--amdd-100);">
+                                <th class="ps-4 py-3 align-middle">Skill</th>
+                                @for (int r = 1; r <= 5; r++)
+                                {
+                                    <th class="text-center py-3 align-middle">
+                                        <div class="fw-bold" style="font-size:1rem;">@r</div>
+                                        @if (r == 1) { <div style="font-size:0.65rem;color:#888;font-weight:normal;">Beginner</div> }
+                                        else if (r == 3) { <div style="font-size:0.65rem;color:#888;font-weight:normal;">Intermediate</div> }
+                                        else if (r == 5) { <div style="font-size:0.65rem;color:#888;font-weight:normal;">Advanced</div> }
+                                        else { <div style="font-size:0.65rem;">&nbsp;</div> }
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (skills != null)
+                            {
+                                foreach (var skill in skills)
+                                {
+                                    string skillId = skill.Replace(" ", "_").Replace("/", "_").Replace("#", "sharp");
+                                    <tr class="self-row" data-skill="@skill">
+                                        <td class="ps-4 py-3 fw-semibold" style="font-size:0.9rem;">@skill</td>
+                                        @for (int r = 1; r <= 5; r++)
+                                        {
+                                            string rid = $"sa_{skillId}_{r}";
+                                            <td class="text-center py-3">
+                                                <input class="self-radio"
+                                                       type="radio"
+                                                       name="selfRatings[@skill]"
+                                                       id="@rid"
+                                                       value="@r"
+                                                       style="width:1.25em;height:1.25em;cursor:pointer;accent-color:var(--amdd-600);display:block;margin:0 auto;" />
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Submit ─────────────────────────────────────────────────── -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-body p-4 text-center">
+                <p class="mb-3" style="color:var(--amdd-700);">
+                    Review your answers before submitting.<br />
+                    <strong>You cannot go back once submitted.</strong>
+                </p>
+                <button type="submit" class="btn btn-success btn-lg px-5" id="submitBtn">
+                    ✅ Submit Exam
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    // ── Timer (75 min) ───────────────────────────────────────────────
+    let totalSecs = 75 * 60;
+    const timerEl    = document.getElementById('timer');
+    const timerBadge = document.getElementById('timer-badge');
+
+    const countdown = setInterval(() => {
+        totalSecs--;
+        if (totalSecs <= 0) { clearInterval(countdown); document.getElementById('examForm').submit(); return; }
+        const m = Math.floor(totalSecs/60).toString().padStart(2,'0');
+        const s = (totalSecs%60).toString().padStart(2,'0');
+        timerEl.textContent = m+':'+s;
+        if (totalSecs <= 300)      { timerBadge.style.background='#9b2c68'; }
+        else if (totalSecs <= 600) { timerBadge.style.background='#7c3aaf'; }
+    }, 1000);
+
+    // ── Progress ─────────────────────────────────────────────────────
+    const mcqBlocks  = Array.from(document.querySelectorAll('.question-block[data-type="mcq"]'));
+    const openBlocks = Array.from(document.querySelectorAll('.question-block[data-type="code"], .question-block[data-type="essay"]'));
+    const selfRows   = Array.from(document.querySelectorAll('.self-row'));
+    const totalAnswerable = mcqBlocks.length + openBlocks.length + 1; // self-assessment counts as 1
+
+    function countAnswered() {
+        let n = 0;
+        mcqBlocks.forEach(b => { if (b.querySelector('input[type="radio"]:checked')) n++; });
+        openBlocks.forEach(b => { const ta = b.querySelector('textarea'); if (ta && ta.value.trim().length > 0) n++; });
+        // Self-assessment: count as done if at least half the skills are rated
+        const rated = selfRows.filter(r => r.querySelector('input[type="radio"]:checked')).length;
+        if (rated >= Math.ceil(selfRows.length / 2)) n++;
+        return n;
+    }
+
+    function updateProgress() {
+        const answered = countAnswered();
+        const pct = Math.min(100, Math.round((answered / totalAnswerable) * 100));
+        const bar = document.getElementById('progressBar');
+        bar.style.width = pct + '%';
+        bar.setAttribute('aria-valuenow', pct);
+        document.getElementById('progressLabel').textContent = answered + ' / ' + totalAnswerable + ' answered';
+    }
+
+    // ── Choice highlight ─────────────────────────────────────────────
+    document.querySelectorAll('.choice-radio').forEach(r => {
+        r.addEventListener('change', function() {
+            document.querySelectorAll(`input[name="${this.name}"]`).forEach(x => {
+                x.closest('.choice-label').classList.remove('active');
+            });
+            this.closest('.choice-label').classList.add('active');
+            updateProgress();
+        });
+    });
+
+    // ── Self-assessment row highlight ────────────────────────────────
+    document.querySelectorAll('.self-radio').forEach(r => {
+        r.addEventListener('change', function() {
+            const row = this.closest('tr');
+            row.style.background = 'var(--amdd-100)';
+            updateProgress();
+        });
+    });
+
+    // ── Textarea char counter ────────────────────────────────────────
+    document.querySelectorAll('textarea.coding-answer').forEach(ta => {
+        const qid = ta.dataset.qid;
+        ta.addEventListener('input', function() {
+            const el = document.getElementById('cc_' + qid);
+            if (el) el.textContent = this.value.length + ' chars';
+            updateProgress();
+        });
+    });
+
+    // ── Submit guard ─────────────────────────────────────────────────
+    document.getElementById('examForm').addEventListener('submit', function(e) {
+        const unanswered = [];
+        let qn = 0;
+        const allBlocks = Array.from(document.querySelectorAll('.question-block'));
+        allBlocks.forEach(b => {
+            qn++;
+            const type = b.dataset.type;
+            if (type === 'mcq' && !b.querySelector('input[type="radio"]:checked')) unanswered.push(qn);
+            else if ((type === 'code' || type === 'essay')) {
+                const ta = b.querySelector('textarea');
+                if (!ta || ta.value.trim().length === 0) unanswered.push(qn);
+            }
+        });
+        if (unanswered.length > 0) {
+            const ok = confirm('You have ' + unanswered.length + ' unanswered item(s): Q' + unanswered.join(', Q') + '.\n\nSubmit anyway?');
+            if (!ok) {
+                e.preventDefault();
+                const first = document.querySelectorAll('.question-block')[unanswered[0]-1];
+                if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+            }
+        }
+    });
+
+    updateProgress();
+})();
+</script>
+}
