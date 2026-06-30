@@ -9,7 +9,7 @@ namespace AMDD_Exam.Services
         public List<ExamQuestion> GetQuestions() => new List<ExamQuestion>
         {
             // ════════════════════════════════════════════════════════════
-            // PART A — C# (10 items)
+            // PART A — C# (8 items)
             // ════════════════════════════════════════════════════════════
             new ExamQuestion { Id=1, Section="CSharp", Type="mcq", Dimension=Dimension.Dev,
                 Text="Which keyword is used to declare a class in C#?",
@@ -54,20 +54,6 @@ namespace AMDD_Exam.Services
                 Text="Which access modifier makes a member accessible ONLY within its own class?",
                 Choices=new List<string>{ "public", "protected", "private", "internal" },
                 CorrectIndex=2 },
-
-            new ExamQuestion { Id=9, Section="CSharp", Type="mcq", Dimension=Dimension.Dev,
-                Text="What is the correct way to declare a nullable integer in C#?",
-                Choices=new List<string>{ "int? x;", "nullable int x;", "int x = null;", "optional int x;" },
-                CorrectIndex=0 },
-
-            new ExamQuestion { Id=10, Section="CSharp", Type="mcq", Dimension=Dimension.Dev,
-                Text="What does the 'override' keyword do in C#?",
-                Choices=new List<string>{
-                    "Creates a new method unrelated to the base class",
-                    "Provides a new implementation of a virtual method from the base class",
-                    "Prevents a method from being inherited",
-                    "Declares a method as static" },
-                CorrectIndex=1 },
 
             // ════════════════════════════════════════════════════════════
             // PART B — SQL (8 items)
@@ -129,7 +115,7 @@ namespace AMDD_Exam.Services
                 CorrectIndex=1 },
 
             // ════════════════════════════════════════════════════════════
-            // PART C — HTML / CSS (4 items)
+            // PART C — HTML / CSS (5 items)
             // ════════════════════════════════════════════════════════════
             new ExamQuestion { Id=19, Section="CSS", Type="mcq", Dimension=Dimension.Dev,
                 Text="Which CSS property changes the text color of an element?",
@@ -155,8 +141,13 @@ namespace AMDD_Exam.Services
                 Choices=new List<string>{ "align-items", "justify-content", "flex-wrap", "align-self" },
                 CorrectIndex=1 },
 
+            new ExamQuestion { Id=41, Section="CSS", Type="mcq", Dimension=Dimension.Dev,
+                Text="Which CSS property controls the space INSIDE an element, between content and its border?",
+                Choices=new List<string>{ "margin", "border", "padding", "spacing" },
+                CorrectIndex=2 },
+
             // ════════════════════════════════════════════════════════════
-            // PART D — REST API (4 items)
+            // PART D — REST API (5 items)
             // ════════════════════════════════════════════════════════════
             new ExamQuestion { Id=23, Section="API", Type="mcq", Dimension=Dimension.Dev,
                 Text="What HTTP method is used to CREATE a new resource via a REST API?",
@@ -177,6 +168,11 @@ namespace AMDD_Exam.Services
                 Text="In ASP.NET Core Web API, which attribute marks a method to handle HTTP GET requests?",
                 Choices=new List<string>{ "[Post]", "[HttpGet]", "[Route(\"GET\")]", "[Get()]" },
                 CorrectIndex=1 },
+
+            new ExamQuestion { Id=42, Section="API", Type="mcq", Dimension=Dimension.Dev,
+                Text="Which HTTP status code means the requested resource was NOT FOUND?",
+                Choices=new List<string>{ "200", "201", "404", "500" },
+                CorrectIndex=2 },
 
             // ════════════════════════════════════════════════════════════
             // PART E — ATTITUDE / BEHAVIORAL (5 items)

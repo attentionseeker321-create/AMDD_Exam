@@ -126,15 +126,18 @@ namespace AMDD_Exam.Controllers
             });
         }
 
-        // ── Reviewer: Save notes ─────────────────────────────────────────
+        // ── Reviewer: Save notes + scores ────────────────────────────────
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult SaveNotes(Guid id, string reviewerNotes)
+        public IActionResult SaveNotes(Guid id, string reviewerNotes,
+            int codingScore = -1, int essayScore = -1)
         {
             if (!IsReviewerAuthed()) return RedirectToAction("ReviewerLogin");
-
             var submission = _store.GetById(id);
             if (submission == null) return NotFound();
-            submission.ReviewerNotes = reviewerNotes ?? "";
+            submission.ReviewerNotes      = reviewerNotes ?? "";
+            submission.CodingReviewScore  = codingScore;
+            submission.EssayReviewScore   = essayScore;
+            _store.Save(submission);
             return RedirectToAction("Review", new { id });
         }
     }

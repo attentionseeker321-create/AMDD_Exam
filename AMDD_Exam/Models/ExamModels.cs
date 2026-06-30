@@ -93,6 +93,21 @@ namespace AMDD_Exam.Models
         public string Remarks      { get; set; }
         public string ReviewerNotes { get; set; } = "";
 
+        // Reviewer-given scores for open-ended sections
+        public int CodingReviewScore   { get; set; } = -1; // -1 = not yet scored
+        public int CodingReviewMax     { get; set; } = 7;
+        public int EssayReviewScore    { get; set; } = -1;
+        public int EssayReviewMax      { get; set; } = 2;
+
+        // Overall score (auto + reviewer)
+        public int OverallScore =>
+            CSharpScore + SqlScore + CssScore + ApiScore + AttitudeScore +
+            (CodingReviewScore >= 0 ? CodingReviewScore : 0) +
+            (EssayReviewScore  >= 0 ? EssayReviewScore  : 0);
+        public int OverallMax =>
+            CSharpMax + SqlMax + CssMax + ApiMax + AttitudeMax + CodingReviewMax + EssayReviewMax;
+        public int OverallPct => OverallMax > 0 ? (int)((OverallScore / (double)OverallMax) * 100) : 0;
+
         // Percentages
         public int CSharpPct   => CSharpMax   > 0 ? (int)((CSharpScore   / (double)CSharpMax)   * 100) : 0;
         public int SqlPct      => SqlMax      > 0 ? (int)((SqlScore      / (double)SqlMax)      * 100) : 0;

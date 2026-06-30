@@ -52,6 +52,7 @@
                             <th class="py-3 text-center">Attitude</th>
                             <th class="py-3 text-center">Coding</th>
                             <th class="py-3 text-center">Result</th>
+                            <th class="py-3 text-center">Overall</th>
                             <th class="py-3">Notes</th>
                             <th class="py-3 text-center">Action</th>
                         </tr>
@@ -114,6 +115,17 @@
                                           style="background:@resultBg;color:#fff;font-size:0.78rem;white-space:nowrap;">
                                         @resultText
                                     </span>
+                                </td>
+                                <td class="text-center">
+                                    @if (s.CodingReviewScore >= 0 && s.EssayReviewScore >= 0)
+                                    {
+                                        <div style="font-weight:700;color:var(--amdd-800);">@s.OverallScore / @s.OverallMax</div>
+                                        <div style="font-size:0.75rem;color:#777;">@s.OverallPct%</div>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#aaa;font-size:0.75rem;">Pending review</span>
+                                    }
                                 </td>
                                 <td style="max-width:180px;">
                                     @if (!string.IsNullOrWhiteSpace(s.ReviewerNotes))

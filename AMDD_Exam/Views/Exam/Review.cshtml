@@ -26,7 +26,7 @@
         </a>
         <div class="d-flex align-items-center gap-2">
             <span style="font-size:0.85rem;color:var(--amdd-600);">
-                ⏱ Submitted @elapsedStr
+                ⏱ Submitted @elapsedStr ​​​​​​​​​ ​​​
             </span>
             <button onclick="window.print()"
                     style="background:var(--amdd-600);color:#fff;border:none;
@@ -106,30 +106,73 @@
         </div>
     </div>
 
-    <!-- Reviewer Notes -->
+    <!-- Reviewer Notes + Scoring -->
     <div class="card shadow-sm border-0 mb-4 no-print">
         <div class="card-header amdd-section-header py-3">
-            <h5 class="mb-0">📝 Reviewer Notes</h5>
+            <h5 class="mb-0">📝 Reviewer Notes & Scoring</h5>
         </div>
         <div class="card-body p-4">
             <form asp-action="SaveNotes" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@s.Id" />
-                <textarea name="reviewerNotes" rows="4"
-                          class="form-control mb-3"
-                          style="border:2px solid var(--amdd-400);border-radius:8px;font-size:0.95rem;"
-                          placeholder="Add your observations, evaluation notes, or recommendation for this applicant...">@s.ReviewerNotes</textarea>
+
+                <div class="row mb-3 g-3">
+                    <div class="col-md-6">
+                        <label class="fw-semibold mb-1" style="color:#2d0a4e;">
+                            💻 Coding Score
+                            <small class="fw-normal text-muted">(out of @s.CodingReviewMax — your evaluation)</small>
+                        </label>
+                        <input type="number" name="codingScore" min="0" max="@s.CodingReviewMax"
+                               value="@(s.CodingReviewScore >= 0 ? s.CodingReviewScore.ToString() : "")"
+                               class="form-control"
+                               placeholder="0–@s.CodingReviewMax"
+                               style="border:2px solid var(--amdd-400);border-radius:8px;" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold mb-1" style="color:#2d0a4e;">
+                            ✍️ Essay Score
+                            <small class="fw-normal text-muted">(out of @s.EssayReviewMax — your evaluation)</small>
+                        </label>
+                        <input type="number" name="essayScore" min="0" max="@s.EssayReviewMax"
+                               value="@(s.EssayReviewScore >= 0 ? s.EssayReviewScore.ToString() : "")"
+                               class="form-control"
+                               placeholder="0–@s.EssayReviewMax"
+                               style="border:2px solid var(--amdd-400);border-radius:8px;" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-semibold mb-1" style="color:#2d0a4e;">Notes / Observations</label>
+                    <textarea name="reviewerNotes" rows="3"
+                              class="form-control"
+                              style="border:2px solid var(--amdd-400);border-radius:8px;font-size:0.95rem;"
+                              placeholder="Add your observations, evaluation notes, or recommendation...">@s.ReviewerNotes</textarea>
+                </div>
+
                 <button type="submit" class="btn fw-semibold"
                         style="background:var(--amdd-700);color:#fff;border:none;
                                padding:8px 24px;border-radius:6px;">
-                    💾 Save Notes
+                    💾 Save
                 </button>
             </form>
-            @if (!string.IsNullOrWhiteSpace(s.ReviewerNotes))
+
+            <!-- Overall Score after reviewer scoring -->
+            @if (s.CodingReviewScore >= 0 && s.EssayReviewScore >= 0)
             {
-                <div class="mt-3 p-3 rounded" style="background:var(--amdd-100);border:1px solid var(--amdd-400);">
-                    <strong style="color:var(--amdd-800);">Saved Note:</strong>
-                    <div style="color:#1a0a2e;margin-top:4px;white-space:pre-wrap;">@s.ReviewerNotes</div>
+                <div class="mt-4 p-3 rounded"
+                     style="background:var(--amdd-100);border:2px solid var(--amdd-500);">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold" style="color:var(--amdd-900);font-size:1rem;">
+                            🏆 Overall Score (incl. coding &amp; essay)
+                        </span>
+                        <span class="fw-bold" style="font-size:1.1rem;color:var(--amdd-800);">
+                            @s.OverallScore / @s.OverallMax
+                            <span style="background:var(--amdd-700);color:#fff;border-radius:6px;
+                                         padding:3px 12px;font-size:0.9rem;margin-left:8px;">
+                                @s.OverallPct%
+                            </span>
+                        </span>
+                    </div>
                 </div>
             }
         </div>
