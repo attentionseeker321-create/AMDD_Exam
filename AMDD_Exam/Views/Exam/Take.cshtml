@@ -59,24 +59,53 @@
                      data-type="@q.Type">
 
                     <div class="mb-3">
-                        <span class="badge mb-2 d-inline-block" 
-                              style="background:var(--amdd-700);color:#ffffff;font-size:0.85rem;font-weight:700;padding:4px 10px;">
+                        <span class="badge mb-2 d-inline-block"
+                              style="background:var(--amdd-700);color:#fff;
+                                     font-size:0.8rem;font-weight:700;padding:4px 10px;border-radius:5px;">
                             Q@(qNum)
                         </span>
-                        <div style="font-size:1rem;line-height:1.7;color:#1a0a2e;font-weight:600;margin-top:4px;">
-                            @if (q.Text.Contains('\n'))
+                        @{
+                            var qtext  = q.Text;
+                            var codeMarkers = new[]{ "---csharp", "---sql", "---css", "---js" };
+                            string codeLang  = null;
+                            int    markerIdx = -1;
+                            foreach (var m in codeMarkers)
                             {
-                                foreach (var line in q.Text.Split('\n'))
+                                var idx = qtext.IndexOf(m);
+                                if (idx >= 0) { codeLang = m; markerIdx = idx; break; }
+                            }
+                        }
+                        @if (markerIdx >= 0)
+                        {
+                            var beforeCode = qtext.Substring(0, markerIdx).Trim();
+                            var codeBody   = qtext.Substring(markerIdx + codeLang.Length).Trim();
+                            string codeColor = codeLang == "---csharp" ? "#c792ea"
+                                             : codeLang == "---sql"    ? "#80cbc4"
+                                             : codeLang == "---css"    ? "#f78c6c"
+                                             : "#82aaff";
+                            if (!string.IsNullOrEmpty(beforeCode))
+                            {
+                                <div class="fw-semibold mb-2" style="font-size:1rem;color:#1a0a2e;line-height:1.6;">
+                                    @foreach (var ln in beforeCode.Split('\n'))
+                                    { <span>@ln</span><br /> }
+                                </div>
+                            }
+                            <pre style="background:#1a1040;color:@codeColor;
+                                        font-family:'Consolas','Courier New',monospace;
+                                        font-size:0.875rem;border-left:4px solid var(--amdd-500);
+                                        border-radius:6px;padding:12px 16px;line-height:1.7;
+                                        white-space:pre;overflow-x:auto;margin:0;">@codeBody</pre>
+                        }
+                        else
+                        {
+                            <div class="fw-semibold" style="font-size:1rem;color:#1a0a2e;line-height:1.6;margin-top:4px;">
+                                @foreach (var ln in qtext.Split('\n'))
                                 {
-                                    if (string.IsNullOrWhiteSpace(line)) { <br /> }
-                                    else { <span>@line</span><br /> }
+                                    if (string.IsNullOrWhiteSpace(ln)) { <br /> }
+                                    else { <span>@ln</span><br /> }
                                 }
-                            }
-                            else
-                            {
-                                @q.Text
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
 
                     @if (q.Type == "mcq")
@@ -231,7 +260,7 @@
 <script>
 (function () {
     // ── Timer (75 min) ───────────────────────────────────────────────
-    let totalSecs = 75 * 60;
+    let totalSecs = 30 * 60;
     const timerEl    = document.getElementById('timer');
     const timerBadge = document.getElementById('timer-badge');
 
