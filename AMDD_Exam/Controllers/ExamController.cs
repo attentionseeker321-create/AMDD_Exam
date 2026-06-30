@@ -39,6 +39,9 @@ namespace AMDD_Exam.Controllers
             string name = TempData.Peek("ApplicantName") as string;
             if (string.IsNullOrWhiteSpace(name)) return RedirectToAction("Index");
 
+            // Record when exam started
+            HttpContext.Session.SetString("ExamStart", DateTime.UtcNow.ToString("o"));
+
             ViewBag.ApplicantName = name;
             ViewBag.Skills        = SelfAssessSkills.Skills;
             return View(_examService.GetQuestions());
@@ -64,6 +67,12 @@ namespace AMDD_Exam.Controllers
             };
 
             var submission = _examService.Evaluate(vm);
+
+            // Calculate time taken
+            var startStr = HttpContext.Session.GetString("ExamStart");
+            if (DateTime.TryParse(startStr, out DateTime startTime))
+                submission.TimeTakenMins = (int)Math.Ceiling((DateTime.UtcNow - startTime).TotalMinutes);
+
             _store.Save(submission);
 
             return View("ThankYou", submission.ApplicantName);

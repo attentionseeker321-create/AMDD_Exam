@@ -62,6 +62,7 @@ namespace AMDD_Exam.Models
         public Guid     Id            { get; set; } = Guid.NewGuid();
         public string   ApplicantName { get; set; }
         public DateTime SubmittedAt   { get; set; } = DateTime.Now;
+        public int      TimeTakenMins { get; set; } // set from TempData on submit
 
         public Dictionary<int, int>    Answers     { get; set; }
         public Dictionary<int, string> OpenAnswers { get; set; }

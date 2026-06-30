@@ -5,30 +5,26 @@
 }
 
 <div class="row justify-content-center mt-4 mb-5">
-<div class="col-lg-11">
+<div class="col-lg-12">
 
-    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2 no-print">
         <div>
             <h3 class="mb-0 fw-bold">🔍 Reviewer Dashboard</h3>
             <small style="color:var(--amdd-600);">Branch Banking Application Development Unit — Internal Use Only</small>
         </div>
-        <div class="d-flex gap-2 align-items-center no-print">
-            <span class="fw-bold px-4 py-2 rounded"
-                  style="background:var(--amdd-700);color:#fff;font-size:0.9rem;
-                         line-height:1.5;display:inline-block;">
+        <div class="d-flex gap-2 align-items-center">
+            <span class="fw-bold px-3 py-2 rounded"
+                  style="background:var(--amdd-700);color:#fff;font-size:0.9rem;">
                 @Model.Count submission(s)
             </span>
-            <button onclick="window.print()"
-                    class="btn fw-semibold"
+            <button onclick="window.print()" class="btn fw-semibold"
                     style="background:var(--amdd-600);color:#fff;border:none;
-                           padding:8px 18px;border-radius:6px;font-size:0.9rem;">
+                           padding:8px 16px;border-radius:6px;font-size:0.85rem;">
                 🖨️ Print All
             </button>
-            <a asp-action="ReviewerLogout"
-               class="btn fw-semibold"
-               style="background:#fff;color:var(--amdd-700);
-                      border:2px solid var(--amdd-600);
-                      padding:8px 18px;border-radius:6px;font-size:0.9rem;">
+            <a asp-action="ReviewerLogout" class="btn fw-semibold"
+               style="background:#fff;color:var(--amdd-700);border:2px solid var(--amdd-600);
+                      padding:8px 16px;border-radius:6px;font-size:0.85rem;">
                 Logout
             </a>
         </div>
@@ -42,17 +38,21 @@
     {
         <div class="card shadow-sm border-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
+                <table class="table table-hover mb-0 align-middle" style="font-size:0.85rem;">
                     <thead style="background:var(--amdd-800);color:#fff;">
                         <tr>
                             <th class="ps-3 py-3">#</th>
                             <th class="py-3">Applicant</th>
                             <th class="py-3">Submitted</th>
-                            <th class="py-3 text-center">Support</th>
-                            <th class="py-3 text-center">Dev Tech</th>
+                            <th class="py-3 text-center">⏱ Time</th>
+                            <th class="py-3 text-center">C#</th>
+                            <th class="py-3 text-center">SQL</th>
+                            <th class="py-3 text-center">CSS</th>
+                            <th class="py-3 text-center">API</th>
                             <th class="py-3 text-center">Attitude</th>
                             <th class="py-3 text-center">Coding</th>
                             <th class="py-3 text-center">Result</th>
+                            <th class="py-3">Notes</th>
                             <th class="py-3 text-center">Action</th>
                         </tr>
                     </thead>
@@ -61,54 +61,77 @@
                         @foreach (var s in Model)
                         {
                             row++;
+                            var phTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(s.SubmittedAt, "Asia/Manila");
                             string resultText  = s.Classification == ResultClassification.Developer ? "Developer"
                                                : s.Classification == ResultClassification.Support   ? "IT Support"
                                                : "Not a Fit";
-                            string resultColor = s.Classification == ResultClassification.Developer ? "#3b0764"
+                            string resultBg    = s.Classification == ResultClassification.Developer ? "#3b0764"
                                                : s.Classification == ResultClassification.Support   ? "#1e3a5f"
                                                : "#7c1d47";
                             <tr>
-                                <td class="ps-3 fw-semibold">@row</td>
-                                <td class="fw-bold" style="font-size:1rem;">@s.ApplicantName</td>
+                                <td class="ps-3 fw-bold">@row</td>
+                                <td class="fw-bold" style="color:#1a0a2e;">@s.ApplicantName</td>
                                 <td>
-                                    @{ var phTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(s.SubmittedAt, "Asia/Manila"); }
-                                    <div style="font-size:0.85rem;">@phTime.ToString("MMM dd, yyyy")</div>
-                                    <div style="font-size:0.8rem;color:var(--amdd-500);">@phTime.ToString("hh:mm tt")</div>
+                                    <div>@phTime.ToString("MMM dd, yyyy")</div>
+                                    <div style="color:var(--amdd-500);font-size:0.78rem;">@phTime.ToString("hh:mm tt")</div>
                                 </td>
                                 <td class="text-center">
-                                    <div style="font-size:0.9rem;font-weight:600;color:@(s.SupportPct>=60?"#3b0764":"#7c1d47");">
-                                        @s.SupportScore / @s.SupportMax
-                                    </div>
-                                    <div style="font-size:0.78rem;color:#666;">@s.SupportPct%</div>
+                                    @if (s.TimeTakenMins > 0)
+                                    {
+                                        <span style="font-weight:600;color:@(s.TimeTakenMins<=30?"#3b0764":"#9b2c68");">
+                                            @s.TimeTakenMins min
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#aaa;">—</span>
+                                    }
                                 </td>
+                                @{
+                                    var cols = new[]
+                                    {
+                                        (s.CSharpScore,  s.CSharpMax,  s.CSharpPct),
+                                        (s.SqlScore,     s.SqlMax,     s.SqlPct),
+                                        (s.CssScore,     s.CssMax,     s.CssPct),
+                                        (s.ApiScore,     s.ApiMax,     s.ApiPct),
+                                        (s.AttitudeScore,s.AttitudeMax,s.AttitudePct),
+                                    };
+                                }
+                                @foreach (var col in cols)
+                                {
+                                    string cc = col.Item3 >= 60 ? "#3b0764" : "#7c1d47";
+                                    <td class="text-center">
+                                        <div style="font-weight:600;color:@cc;">@col.Item1 / @col.Item2</div>
+                                        <div style="font-size:0.75rem;color:#777;">@col.Item3%</div>
+                                    </td>
+                                }
                                 <td class="text-center">
-                                    <div style="font-size:0.9rem;font-weight:600;color:@(s.DevPct>=60?"#3b0764":"#7c1d47");">
-                                        @s.DevScore / @s.DevMax
-                                    </div>
-                                    <div style="font-size:0.78rem;color:#666;">@s.DevPct%</div>
-                                </td>
-                                <td class="text-center">
-                                    <div style="font-size:0.9rem;font-weight:600;color:@(s.AttitudePct>=60?"#3b0764":"#7c1d47");">
-                                        @s.AttitudeScore / @s.AttitudeMax
-                                    </div>
-                                    <div style="font-size:0.78rem;color:#666;">@s.AttitudePct%</div>
-                                </td>
-                                <td class="text-center">
-                                    <div style="font-size:0.85rem;font-weight:600;color:#3b0764;">
-                                        @s.CodingAttempted / @s.CodingTotal
-                                    </div>
-                                    <div style="font-size:0.78rem;color:#666;">attempted</div>
+                                    <div style="font-weight:600;color:#3b0764;">@s.CodingAttempted / @s.CodingTotal</div>
+                                    <div style="font-size:0.75rem;color:#777;">attempted</div>
                                 </td>
                                 <td class="text-center">
                                     <span class="px-2 py-1 rounded fw-bold"
-                                          style="background:@resultColor;color:#fff;font-size:0.8rem;white-space:nowrap;">
+                                          style="background:@resultBg;color:#fff;font-size:0.78rem;white-space:nowrap;">
                                         @resultText
                                     </span>
+                                </td>
+                                <td style="max-width:180px;">
+                                    @if (!string.IsNullOrWhiteSpace(s.ReviewerNotes))
+                                    {
+                                        <span style="font-size:0.78rem;color:#3b0764;font-style:italic;">
+                                            @(s.ReviewerNotes.Length > 60 ? s.ReviewerNotes.Substring(0,60) + "…" : s.ReviewerNotes)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span style="color:#bbb;font-size:0.75rem;">No notes</span>
+                                    }
                                 </td>
                                 <td class="text-center">
                                     <a asp-action="Review" asp-route-id="@s.Id"
                                        class="btn btn-sm"
-                                       style="background:var(--amdd-700);color:#fff;border:none;white-space:nowrap;">
+                                       style="background:var(--amdd-700);color:#fff;border:none;
+                                              white-space:nowrap;font-size:0.8rem;padding:5px 12px;">
                                         View Detail
                                     </a>
                                 </td>
