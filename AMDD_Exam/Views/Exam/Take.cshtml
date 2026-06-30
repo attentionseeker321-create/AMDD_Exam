@@ -15,7 +15,7 @@
     int totalAnswerable = ordered.Count + 1; // +1 for self-assessment block
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center no-select" style="user-select:none;">
 <div class="col-lg-9">
 
     <div class="d-flex align-items-center justify-content-between my-4 flex-wrap gap-2">
@@ -257,6 +257,29 @@
 </div>
 
 @section Scripts {
+<script>
+// ── Anti-cheat: disable copy, right-click, inspect ───────────────
+(function() {
+    // Disable right-click context menu
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+    // Disable text selection via keyboard
+    document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+
+    // Disable copy, cut, paste
+    document.addEventListener('copy',  function(e) { e.preventDefault(); });
+    document.addEventListener('cut',   function(e) { e.preventDefault(); });
+
+    // Block DevTools keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // F12
+        if (e.key === 'F12') { e.preventDefault(); return false; }
+        // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U, Ctrl+S
+        if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
+        if (e.ctrlKey && ['U','S'].includes(e.key.toUpperCase())) { e.preventDefault(); return false; }
+    });
+})();
+</script>
 <script>
 (function () {
     // ── Timer (75 min) ───────────────────────────────────────────────

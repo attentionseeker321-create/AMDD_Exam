@@ -232,3 +232,19 @@ pre.question-code-block {
     overflow-x: auto;
     margin-top: 8px;
 }
+
+/* ── Anti-cheat: no text selection on exam page ─────────────────────── */
+.no-select, .no-select * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+/* Allow selection inside textareas and inputs (applicant needs to type) */
+.no-select textarea,
+.no-select input {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}

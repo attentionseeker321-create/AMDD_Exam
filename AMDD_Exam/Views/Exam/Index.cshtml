@@ -20,6 +20,14 @@
                 <p class="text-center mb-4" style="color:#4a3060;">
                     Answer all questions honestly and to the best of your ability.
                 </p>
+                <div class="alert mb-4 text-center fw-semibold"
+                     style="background:var(--amdd-100);border:2px solid var(--amdd-500);
+                            color:var(--amdd-900);border-radius:8px;font-size:0.95rem;">
+                    ⏱ You have <strong>30 minutes</strong> to complete this exam.<br />
+                    <small class="fw-normal" style="color:var(--amdd-700);">
+                        The exam will auto-submit when time runs out.
+                    </small>
+                </div>
                 <form asp-action="Start" method="post">
                     @Html.AntiForgeryToken()
                     <div class="mb-4">

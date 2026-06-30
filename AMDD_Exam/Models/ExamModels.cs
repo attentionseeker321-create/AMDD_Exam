@@ -67,24 +67,42 @@ namespace AMDD_Exam.Models
         public Dictionary<int, string> OpenAnswers { get; set; }
         public Dictionary<string, int> SelfRatings { get; set; }
 
-        // Computed
-        public int SupportScore    { get; set; }
-        public int SupportMax      { get; set; }
-        public int DevScore        { get; set; }
-        public int DevMax          { get; set; }
-        public int AttitudeScore   { get; set; }
-        public int AttitudeMax     { get; set; }
+        // Per-section scores
+        public int CSharpScore   { get; set; }
+        public int CSharpMax     { get; set; }
+        public int SqlScore      { get; set; }
+        public int SqlMax        { get; set; }
+        public int CssScore      { get; set; }
+        public int CssMax        { get; set; }
+        public int ApiScore      { get; set; }
+        public int ApiMax        { get; set; }
+        public int AttitudeScore { get; set; }
+        public int AttitudeMax   { get; set; }
+
+        // Legacy — kept for compatibility
+        public int SupportScore  { get; set; }
+        public int SupportMax    { get; set; }
+        public int DevScore      { get; set; }
+        public int DevMax        { get; set; }
+
         public int CodingAttempted { get; set; }
         public int CodingTotal     { get; set; }
 
         public ResultClassification Classification { get; set; }
-        public string Remarks { get; set; }
+        public string Remarks      { get; set; }
         public string ReviewerNotes { get; set; } = "";
 
-        public int SupportPct  => SupportMax  > 0 ? (int)((SupportScore  / (double)SupportMax)  * 100) : 0;
-        public int DevPct      => DevMax      > 0 ? (int)((DevScore      / (double)DevMax)      * 100) : 0;
+        // Percentages
+        public int CSharpPct   => CSharpMax   > 0 ? (int)((CSharpScore   / (double)CSharpMax)   * 100) : 0;
+        public int SqlPct      => SqlMax      > 0 ? (int)((SqlScore      / (double)SqlMax)      * 100) : 0;
+        public int CssPct      => CssMax      > 0 ? (int)((CssScore      / (double)CssMax)      * 100) : 0;
+        public int ApiPct      => ApiMax      > 0 ? (int)((ApiScore      / (double)ApiMax)      * 100) : 0;
         public int AttitudePct => AttitudeMax > 0 ? (int)((AttitudeScore / (double)AttitudeMax) * 100) : 0;
         public int CodingPct   => CodingTotal > 0 ? (int)((CodingAttempted / (double)CodingTotal) * 100) : 0;
+
+        // Legacy helpers
+        public int SupportPct  => SupportMax  > 0 ? (int)((SupportScore  / (double)SupportMax)  * 100) : 0;
+        public int DevPct      => DevMax      > 0 ? (int)((DevScore      / (double)DevMax)      * 100) : 0;
 
         public string ClassificationLabel =>
             Classification == ResultClassification.Developer ? "💻 Software Developer" :

@@ -3,85 +3,139 @@
 @{
     ViewData["Title"] = "Review — " + Model.Submission.ApplicantName;
     var s  = Model.Submission;
-    var qs = Model.Questions.ToDictionary(q => q.Id);
-
     string badgeBg = s.Classification == ResultClassification.Developer ? "#5b21b6"
-                   : s.Classification == ResultClassification.Support   ? "var(--amdd-500)"
-                   : "#9b2c68";
+                   : s.Classification == ResultClassification.Support   ? "#1e3a5f"
+                   : "#7c1d47";
+    var phTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(s.SubmittedAt, "Asia/Manila");
+    var elapsed = DateTime.Now - s.SubmittedAt;
+    string elapsedStr = elapsed.TotalHours >= 1
+        ? $"{(int)elapsed.TotalHours}h {elapsed.Minutes}m ago"
+        : elapsed.TotalMinutes >= 1 ? $"{(int)elapsed.TotalMinutes}m ago" : "just now";
 }
 
-<div class="row justify-content-center mt-4 mb-5">
+<div class="row justify-content-center mt-3 mb-5">
 <div class="col-lg-10">
 
-    <div class="mb-3 d-flex gap-2 flex-wrap">
+    <!-- Top bar: Back left, Print right -->
+    <div class="d-flex justify-content-between align-items-center mb-3 no-print flex-wrap gap-2">
         <a asp-action="Results"
-           class="btn btn-sm fw-semibold no-print"
            style="background:var(--amdd-700);color:#fff;border:none;
-                  padding:8px 20px;border-radius:6px;font-size:0.9rem;">
+                  padding:8px 20px;border-radius:6px;font-size:0.9rem;
+                  text-decoration:none;font-weight:600;">
             ← Back to Dashboard
         </a>
-        <button onclick="window.print()"
-                class="btn btn-sm fw-semibold no-print"
-                style="background:var(--amdd-600);color:#fff;border:none;
-                       padding:8px 20px;border-radius:6px;font-size:0.9rem;">
-            🖨️ Print / Save PDF
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <span style="font-size:0.85rem;color:var(--amdd-600);">
+                ⏱ Submitted @elapsedStr
+            </span>
+            <button onclick="window.print()"
+                    style="background:var(--amdd-600);color:#fff;border:none;
+                           padding:8px 20px;border-radius:6px;font-size:0.9rem;
+                           font-weight:600;cursor:pointer;">
+                🖨️ Print / Save PDF
+            </button>
+        </div>
     </div>
 
-    <!-- ── Classification banner ──────────────────────────────────── -->
+    <!-- Classification banner -->
     <div class="card shadow border-0 mb-4">
-        <div class="card-header text-white text-center py-4" style="background:linear-gradient(135deg,var(--amdd-900),var(--amdd-700));">
+        <div class="text-white text-center py-4 px-4"
+             style="background:linear-gradient(135deg,var(--amdd-900),var(--amdd-700));">
             <h3 class="mb-1 fw-bold">@s.ApplicantName</h3>
-            <span class="badge px-3 py-2 fs-6 fw-bold" style="background:@badgeBg;">@s.ClassificationLabel</span>
+            <span class="px-3 py-1 fw-bold rounded"
+                  style="background:@badgeBg;color:#fff;font-size:1rem;">
+                @s.ClassificationLabel
+            </span>
             <p class="mb-0 mt-2 small opacity-75">
-                Submitted: @(TimeZoneInfo.ConvertTimeBySystemTimeZoneId(s.SubmittedAt, "Asia/Manila").ToString("MMMM dd, yyyy — hh:mm tt"))
+                Submitted: @phTime.ToString("MMMM dd, yyyy — hh:mm tt")
             </p>
         </div>
-        <div class="card-body p-4">
-            <div class="alert alert-light border mb-4">@s.Remarks</div>
 
-            <!-- Score bars -->
-            <h6 class="fw-bold text-uppercase mb-3 small" style="color:var(--amdd-700);">📊 Score Breakdown</h6>
+        <div class="card-body p-4">
+            <div class="alert alert-light border mb-4" style="color:#1a0a2e;">@s.Remarks</div>
+
+            <!-- Per-subject score bars -->
+            <h6 class="fw-bold text-uppercase mb-3 small" style="color:var(--amdd-700);">
+                📊 Score Breakdown
+            </h6>
             @{
-                var dims = new[]
+                var subjects = new[]
                 {
-                    (Label:"IT Support Technical (incl. Security)", Score:s.SupportScore,  Max:s.SupportMax,  Pct:s.SupportPct),
-                    (Label:"Development Technical",                  Score:s.DevScore,      Max:s.DevMax,      Pct:s.DevPct),
-                    (Label:"Attitude & Behavior (gate ≥ 60%)",       Score:s.AttitudeScore, Max:s.AttitudeMax, Pct:s.AttitudePct),
+                    (Label:"C#",          Score:s.CSharpScore,   Max:s.CSharpMax,   Pct:s.CSharpPct),
+                    (Label:"SQL",         Score:s.SqlScore,      Max:s.SqlMax,      Pct:s.SqlPct),
+                    (Label:"HTML / CSS",  Score:s.CssScore,      Max:s.CssMax,      Pct:s.CssPct),
+                    (Label:"REST API",    Score:s.ApiScore,      Max:s.ApiMax,      Pct:s.ApiPct),
+                    (Label:"Attitude",    Score:s.AttitudeScore, Max:s.AttitudeMax, Pct:s.AttitudePct),
                 };
             }
-            @foreach (var d in dims)
+            @foreach (var d in subjects)
             {
-                string bc = d.Pct >= 60 ? "#5b21b6" : (d.Pct >= 40 ? "#8b35c8" : "#9b2c68");
-                <div class="mb-4">
+                if (d.Max == 0) continue;
+                string bc = d.Pct >= 60 ? "#5b21b6" : d.Pct >= 40 ? "#8b35c8" : "#9b2c68";
+                <div class="mb-3">
                     <div class="d-flex align-items-center mb-1" style="gap:8px;">
                         <span class="fw-semibold flex-grow-1" style="font-size:0.9rem;">@d.Label</span>
                         <span style="font-size:0.85rem;color:#555;white-space:nowrap;">@d.Score / @d.Max</span>
-                        <span style="background:@bc;color:#fff;font-size:0.8rem;border-radius:6px;padding:2px 10px;white-space:nowrap;min-width:52px;text-align:center;display:inline-block;">@d.Pct%</span>
+                        <span style="background:@bc;color:#fff;font-size:0.8rem;border-radius:5px;
+                                     padding:2px 10px;white-space:nowrap;min-width:50px;
+                                     text-align:center;display:inline-block;">@d.Pct%</span>
                     </div>
-                    <div class="progress" style="height:14px;border-radius:8px;background:#e9d5ff;">
+                    <div class="progress" style="height:12px;border-radius:8px;background:#e9d5ff;">
                         <div class="progress-bar" role="progressbar"
-                             style="width:@d.Pct%;background:@bc;border-radius:8px;transition:width 1s ease;"
+                             style="width:@d.Pct%;background:@bc;border-radius:8px;"
                              aria-valuenow="@d.Pct" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
             }
+
+            <!-- Coding -->
             <div class="mb-0">
                 <div class="d-flex align-items-center mb-1" style="gap:8px;">
-                    <span class="fw-semibold flex-grow-1" style="font-size:0.9rem;">Coding Challenges Attempted</span>
-                    <span style="font-size:0.85rem;color:#555;white-space:nowrap;">@s.CodingAttempted / @s.CodingTotal</span>
-                    <span style="background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");color:#fff;font-size:0.8rem;border-radius:6px;padding:2px 10px;white-space:nowrap;min-width:52px;text-align:center;display:inline-block;">@s.CodingPct%</span>
+                    <span class="fw-semibold flex-grow-1" style="font-size:0.9rem;">Coding Challenges</span>
+                    <span style="font-size:0.85rem;color:#555;white-space:nowrap;">@s.CodingAttempted / @s.CodingTotal attempted</span>
+                    <span style="background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");color:#fff;font-size:0.8rem;
+                                 border-radius:5px;padding:2px 10px;min-width:50px;
+                                 text-align:center;display:inline-block;">@s.CodingPct%</span>
                 </div>
-                <div class="progress" style="height:14px;border-radius:8px;background:#e9d5ff;">
+                <div class="progress" style="height:12px;border-radius:8px;background:#e9d5ff;">
                     <div class="progress-bar" role="progressbar"
-                         style="width:@s.CodingPct%;background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");border-radius:8px;transition:width 1s ease;"
+                         style="width:@s.CodingPct%;background:@(s.CodingPct>=50?"#5b21b6":"#9b2c68");border-radius:8px;"
                          aria-valuenow="@s.CodingPct" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ── MCQ Answers ──────────────────────────────────────────────── -->
+    <!-- Reviewer Notes -->
+    <div class="card shadow-sm border-0 mb-4 no-print">
+        <div class="card-header amdd-section-header py-3">
+            <h5 class="mb-0">📝 Reviewer Notes</h5>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="SaveNotes" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@s.Id" />
+                <textarea name="reviewerNotes" rows="4"
+                          class="form-control mb-3"
+                          style="border:2px solid var(--amdd-400);border-radius:8px;font-size:0.95rem;"
+                          placeholder="Add your observations, evaluation notes, or recommendation for this applicant...">@s.ReviewerNotes</textarea>
+                <button type="submit" class="btn fw-semibold"
+                        style="background:var(--amdd-700);color:#fff;border:none;
+                               padding:8px 24px;border-radius:6px;">
+                    💾 Save Notes
+                </button>
+            </form>
+            @if (!string.IsNullOrWhiteSpace(s.ReviewerNotes))
+            {
+                <div class="mt-3 p-3 rounded" style="background:var(--amdd-100);border:1px solid var(--amdd-400);">
+                    <strong style="color:var(--amdd-800);">Saved Note:</strong>
+                    <div style="color:#1a0a2e;margin-top:4px;white-space:pre-wrap;">@s.ReviewerNotes</div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- MCQ Answers -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header amdd-section-header py-3">
             <h5 class="mb-0">📋 Multiple Choice Answers</h5>
@@ -93,31 +147,39 @@
                 qn++;
                 bool answered = s.Answers.TryGetValue(q.Id, out int chosen);
                 bool correct  = answered && chosen == q.CorrectIndex;
-                string rowBg  = !answered ? "" : (correct ? "background:#ede9fe;" : "background:#fdf0f5;");
                 <div class="mb-3 pb-3 border-bottom">
                     <div class="mb-2">
-                        <span style="background:var(--amdd-700);color:#ffffff;font-size:0.8rem;
+                        <span style="background:var(--amdd-700);color:#fff;font-size:0.78rem;
                                      font-weight:700;padding:3px 10px;border-radius:5px;
                                      display:inline-block;margin-bottom:6px;">Q@(qn)</span>
-                        <div class="fw-semibold" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">
-                            @if (q.Text.Contains('\n'))
-                            {
-                                foreach (var line in q.Text.Split('\n'))
-                                { <span>@line</span><br /> }
-                            }
-                            else { @q.Text }
+                        @if (!answered)
+                        {
+                            <span class="ms-2 small text-danger">⚠️ Not answered</span>
+                        }
+                        else if (correct)
+                        {
+                            <span class="ms-2 small" style="color:#5b21b6;">✅ Correct</span>
+                        }
+                        else
+                        {
+                            <span class="ms-2 small" style="color:#9b2c68;">❌ Wrong</span>
+                        }
+                        <div class="fw-semibold mt-1" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">
+                            @foreach (var line in q.Text.Replace("---csharp","").Replace("---sql","").Replace("---css","").Replace("---js","").Split('\n'))
+                            { <span>@line</span><br /> }
                         </div>
                     </div>
                     <div class="list-group list-group-flush small">
                         @for (int i = 0; i < q.Choices.Count; i++)
                         {
-                            bool isCorrect  = i == q.CorrectIndex;
-                            bool isChosen   = answered && i == chosen;
+                            bool isCorrect = i == q.CorrectIndex;
+                            bool isChosen  = answered && i == chosen;
                             string bg = isCorrect && isChosen ? "background:#ddd6fe;border-left:4px solid #5b21b6;"
                                       : isCorrect             ? "background:#ede9fe;border-left:4px solid #a78bfa;"
                                       : isChosen              ? "background:#fde8f0;border-left:4px solid #9b2c68;"
                                       : "";
-                            <div class="list-group-item py-1 px-2" style="@bg border-radius:4px;margin-bottom:3px;">
+                            <div class="list-group-item py-1 px-2"
+                                 style="@bg border-radius:4px;margin-bottom:3px;font-size:0.88rem;">
                                 @if (isCorrect && isChosen) { <span class="me-1">✅</span> }
                                 else if (isChosen)          { <span class="me-1">❌</span> }
                                 else if (isCorrect)         { <span class="me-1">🟣</span> }
@@ -125,16 +187,12 @@
                             </div>
                         }
                     </div>
-                    @if (!answered)
-                    {
-                        <small class="text-danger">⚠️ Not answered</small>
-                    }
                 </div>
             }
         </div>
     </div>
 
-    <!-- ── Coding Answers ───────────────────────────────────────────── -->
+    <!-- Coding Answers -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header amdd-section-header py-3">
             <h5 class="mb-0">💻 Coding Challenge Answers</h5>
@@ -144,28 +202,29 @@
             {
                 qn++;
                 s.OpenAnswers.TryGetValue(q.Id, out string codeAns);
+                bool attempted = !string.IsNullOrWhiteSpace(codeAns);
                 <div class="mb-4 pb-4 border-bottom">
                     <div class="mb-2">
-                        <span style="background:var(--amdd-700);color:#ffffff;font-size:0.8rem;
+                        <span style="background:var(--amdd-700);color:#fff;font-size:0.78rem;
                                      font-weight:700;padding:3px 10px;border-radius:5px;
                                      display:inline-block;margin-bottom:6px;">Q@(qn)</span>
-                        <div class="fw-semibold" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">
-                            @foreach (var line in q.Text.Split('\n')) { <span>@line</span><br /> }
+                        <span class="ms-2 small" style="color:@(attempted?"#5b21b6":"#9b2c68");">
+                            @(attempted ? "✅ Attempted" : "❌ Not attempted")
+                        </span>
+                        <div class="fw-semibold mt-1" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">
+                            @foreach (var line in q.Text.Replace("---csharp","").Replace("---sql","").Replace("---css","").Replace("---js","").Split('\n'))
+                            { <span>@line</span><br /> }
                         </div>
                     </div>
-                    @if (!string.IsNullOrWhiteSpace(q.CodingPrompt))
-                    {
-                        <div class="alert alert-secondary small py-2 mb-2">
-                            @foreach (var line in q.CodingPrompt.Split('\n')) { @line<br /> }
-                        </div>
-                    }
-                    <pre class="code-editor p-3 rounded small" style="min-height:80px;white-space:pre-wrap;">@(string.IsNullOrWhiteSpace(codeAns) ? "(no answer submitted)" : codeAns)</pre>
+                    <pre style="background:#1a1040;color:#c792ea;font-family:'Consolas',monospace;
+                                font-size:0.85rem;border-left:4px solid var(--amdd-500);
+                                border-radius:6px;padding:12px;white-space:pre-wrap;min-height:60px;">@(attempted ? codeAns : "(no answer submitted)")</pre>
                 </div>
             }
         </div>
     </div>
 
-    <!-- ── Essay Answers ────────────────────────────────────────────── -->
+    <!-- Essay Answers -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header amdd-section-header py-3">
             <h5 class="mb-0">✍️ Essay Answers</h5>
@@ -177,12 +236,13 @@
                 s.OpenAnswers.TryGetValue(q.Id, out string essayAns);
                 <div class="mb-4 pb-4 border-bottom">
                     <div class="mb-2">
-                        <span style="background:var(--amdd-700);color:#ffffff;font-size:0.8rem;
+                        <span style="background:var(--amdd-700);color:#fff;font-size:0.78rem;
                                      font-weight:700;padding:3px 10px;border-radius:5px;
                                      display:inline-block;margin-bottom:6px;">Q@(qn)</span>
-                        <div class="fw-semibold" style="font-size:0.95rem;color:#1a0a2e;line-height:1.6;">@q.Text</div>
+                        <div class="fw-semibold mt-1" style="font-size:0.95rem;color:#1a0a2e;">@q.Text</div>
                     </div>
-                    <div class="p-3 rounded small" style="background:var(--amdd-50);border:1px solid #e9d5ff;white-space:pre-wrap;min-height:60px;">
+                    <div class="p-3 rounded" style="background:var(--amdd-50);border:1px solid #e9d5ff;
+                                                    white-space:pre-wrap;min-height:60px;font-size:0.9rem;color:#1a0a2e;">
                         @(string.IsNullOrWhiteSpace(essayAns) ? "(no answer submitted)" : essayAns)
                     </div>
                 </div>
@@ -190,7 +250,7 @@
         </div>
     </div>
 
-    <!-- ── Self-Assessment ──────────────────────────────────────────── -->
+    <!-- Self-Assessment -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header amdd-section-header py-3">
             <h5 class="mb-0">⭐ Self-Assessment Ratings</h5>
@@ -209,7 +269,7 @@
                         @foreach (var skill in SelfAssessSkills.Skills)
                         {
                             int rating = s.SelfRatings != null && s.SelfRatings.TryGetValue(skill, out int r) ? r : 0;
-                            string level = rating switch { 1 => "Beginner", 2 => "Elementary", 3 => "Intermediate", 4 => "Proficient", 5 => "Advanced", _ => "Not rated" };
+                            string level = rating switch { 1=>"Beginner",2=>"Elementary",3=>"Intermediate",4=>"Proficient",5=>"Advanced",_=>"Not rated" };
                             string starColor = rating >= 4 ? "var(--amdd-600)" : rating >= 2 ? "var(--amdd-400)" : "#ccc";
                             <tr>
                                 <td class="ps-4 fw-semibold">@skill</td>
@@ -220,9 +280,9 @@
                                     }
                                 </td>
                                 <td>
-                                    <span class="badge" style="background:@(rating>=4?"#5b21b6":rating>=2?"var(--amdd-600)":"#888");color:#fff;font-size:0.8rem;">
-                                        @level
-                                    </span>
+                                    <span style="background:@(rating>=4?"#5b21b6":rating>=2?"var(--amdd-600)":"#888");
+                                               color:#fff;font-size:0.78rem;border-radius:5px;
+                                               padding:2px 10px;display:inline-block;">@level</span>
                                 </td>
                             </tr>
                         }

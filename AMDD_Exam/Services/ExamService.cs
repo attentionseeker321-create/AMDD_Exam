@@ -281,10 +281,10 @@ namespace AMDD_Exam.Services
         {
             var questions = GetQuestions().ToDictionary(q => q.Id);
 
-            int suppScore = 0, suppMax = 0;
-            int devScore  = 0, devMax  = 0;
-            int attScore  = 0, attMax  = 0;
-            int codingAttempted = 0, codingTotal = 0;
+            int csScore=0,csMax=0, sqlScore=0,sqlMax=0;
+            int cssScore=0,cssMax=0, apiScore=0,apiMax=0;
+            int attScore=0,attMax=0;
+            int codingAttempted=0, codingTotal=0;
 
             foreach (var q in questions.Values)
             {
@@ -299,32 +299,35 @@ namespace AMDD_Exam.Services
                 if (q.Type == "essay") continue;
 
                 bool correct = vm.Answers.TryGetValue(q.Id, out int ans) && ans == q.CorrectIndex;
-                switch (q.Dimension)
+                switch (q.Section)
                 {
-                    case Dimension.Support: suppMax++;  if (correct) suppScore++; break;
-                    case Dimension.Dev:     devMax++;   if (correct) devScore++;  break;
-                    case Dimension.Attitude:attMax++;   if (correct) attScore++;  break;
+                    case "CSharp":   csMax++;  if (correct) csScore++;  break;
+                    case "SQL":      sqlMax++; if (correct) sqlScore++; break;
+                    case "CSS":      cssMax++; if (correct) cssScore++; break;
+                    case "API":      apiMax++; if (correct) apiScore++; break;
+                    case "Attitude": attMax++; if (correct) attScore++; break;
                 }
             }
 
-            double devPct  = devMax  > 0 ? (double)devScore  / devMax  : 0;
-            double attPct  = attMax  > 0 ? (double)attScore  / attMax  : 0;
+            double avgTech = (csMax+sqlMax+cssMax+apiMax) > 0
+                ? (double)(csScore+sqlScore+cssScore+apiScore) / (csMax+sqlMax+cssMax+apiMax) : 0;
+            double attPct  = attMax > 0 ? (double)attScore / attMax : 0;
             double codPct  = codingTotal > 0 ? (double)codingAttempted / codingTotal : 0;
 
             ResultClassification classification;
             if (attPct < 0.60)
                 classification = ResultClassification.NotAFit;
-            else if (devPct >= 0.60 && codPct >= 0.50)
+            else if (avgTech >= 0.60 && codPct >= 0.50)
                 classification = ResultClassification.Developer;
-            else if (devPct >= 0.40)
+            else if (avgTech >= 0.40)
                 classification = ResultClassification.Support;
             else
                 classification = ResultClassification.NotAFit;
 
             string remarks = classification == ResultClassification.Developer
-                ? "Strong technical knowledge across C#, SQL, CSS, and REST APIs — combined with a positive work attitude and solid coding challenge participation. Clear potential as a Software Developer for AMDD."
+                ? "Strong technical knowledge across C#, SQL, CSS, and REST APIs — combined with positive work attitude and solid coding participation. Clear potential as a Software Developer for AMDD."
                 : classification == ResultClassification.Support
-                    ? "Moderate technical knowledge with good work attitude. Candidate may be suited for an IT Support or junior developer role within the team."
+                    ? "Moderate technical knowledge with good work attitude. Candidate may be suited for an IT Support or junior developer role."
                     : "Results do not sufficiently align with the Developer or IT Support profile at this time. Encourage the applicant to build their skills and apply again.";
 
             return new ExamSubmission
@@ -333,12 +336,11 @@ namespace AMDD_Exam.Services
                 Answers         = vm.Answers,
                 OpenAnswers     = vm.OpenAnswers,
                 SelfRatings     = vm.SelfRatings,
-                SupportScore    = suppScore,
-                SupportMax      = suppMax,
-                DevScore        = devScore,
-                DevMax          = devMax,
-                AttitudeScore   = attScore,
-                AttitudeMax     = attMax,
+                CSharpScore     = csScore,  CSharpMax  = csMax,
+                SqlScore        = sqlScore, SqlMax     = sqlMax,
+                CssScore        = cssScore, CssMax     = cssMax,
+                ApiScore        = apiScore, ApiMax     = apiMax,
+                AttitudeScore   = attScore, AttitudeMax= attMax,
                 CodingAttempted = codingAttempted,
                 CodingTotal     = codingTotal,
                 Classification  = classification,
